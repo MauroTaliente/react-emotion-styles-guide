@@ -74,7 +74,7 @@ const useCreateStylesGuide = (payload: any): boolean => {
     (name: string) => {
       updateGuide(['SET_THEME', themes[name]]);
     },
-    [themes],
+    [themes, updateGuide],
   );
 
   const css: Css = useCallback(
@@ -96,7 +96,7 @@ const useCreateStylesGuide = (payload: any): boolean => {
       }, {});
       return create;
     },
-    [stylesGuide.root],
+    [css],
   );
 
   // AUTO
