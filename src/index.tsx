@@ -1,121 +1,134 @@
+import React, { useMemo } from 'react';
 import * as R from 'ramda';
 import facepaint from 'facepaint';
 
-import { useCallback, useEffect, useState } from 'react';
+// import defaultConfig from './model';
+import newContext from './helpers/context';
 
-import StyleGuideProvider from './StyleGuideProvider';
-import { useStylesState, useStylesUpdater } from './context';
-import DEFAUT_CONFIG, { Root, Theme, Themes, SetTheme, Css, Scss, Guide } from './model';
+import {
+  InitGuide,
+  BaseGuide,
+  Reducer,
+  Actions,
+  CSS_Rule,
+  CSS_Rules,
+  CSS_Rule_Facepaint,
+  CSS_Rules_Facepaint,
+  emptyTheme,
+  Entries,
+} from './model';
 
-// helpers
-const cleanObj = R.reject(R.anyPass([R.isEmpty, R.isNil]));
-const isEmpty = R.isEmpty;
-const merge = R.mergeDeepRight;
+export const getInitConfig = <T,>({
+  themes: initTemes = {},
+  activeTheme = '',
+  baseTheme = '',
+  breakPoints,
+  ...root
+}: InitGuide<T>): BaseGuide<T> => {
+  // gets props
+  const themesNames = Object.keys(initTemes);
+ 
+  const themesFlags = themesNames.reduce((pre: any, name) => {
+    return { ...pre, [name]: activeTheme === name };
+  }, {});
+ 
+  const base = (() => {
+    if (baseTheme in initTemes) return initTemes[activeTheme];
+    if (themesNames.length) return initTemes[themesNames[0]];
+    return {};
+  })();
 
-const formatConfigData = ({ payload, base = {}, name }: any): Root | Theme => {
-  const breakPoints = payload.breakPoints || base.breakPoints;
-  const colors = merge(base?.colors || {}, payload?.colors || {});
-  const fonts = merge(base?.fonts || {}, payload?.fonts || {});
-  const texts = merge(base?.texts || {}, payload?.texts || {});
-  const atoms = merge(base?.atoms || {}, payload?.atoms || {});
+  const themes = themesNames.reduce((pre: any, name) => {
+    return { ...pre, [name]: {
+      ...emptyTheme, name,
+      ...R.mergeDeepLeft(initTemes[name], base),
+    } };
+  }, {});
 
-  const format = cleanObj({
+  const theme = (() => {
+    if (activeTheme in themes) return themes[activeTheme];
+    if (themesNames.length) return themes[themesNames[0]];
+    return {};
+  })();
+
+  // res root and others themes
+  return {
+    root,
+    theme,
+    themes,
+    themesFlags,
     breakPoints,
-    colors,
-    fonts,
-    texts,
-    atoms,
-    name,
-  });
-  return format;
+  } as any;
 };
 
-const formtaThemesData = (payload: any): Themes => {
-  const themes: Themes = Object.entries(payload.themes).reduce(
-    (pre, [name, data]) => ({
-      ...pre,
-      [name]: formatConfigData({
-        name,
-        payload: data,
-        base: payload.themes?.[payload.baseTheme],
-      }),
-    }),
-    {},
-  );
-
-  return themes;
+const reducer: Reducer = (data, [action, payload]) => {
+  if (action === Actions.GUIDE)
+    return payload;
+  if (action === Actions.THEME)
+    return {...data, theme: data.themes[payload]};
+  return data;
 };
 
-const getActiveTheme = ({ root, themes }: any): Theme | null => {
-  const themeNames = Object.keys(themes);
-  if (root.initTheme && themeNames.length && !themes[root.initTheme]) {
-    throw new Error('The initTheme is not available.');
+const createStyleGuide = <T,>(config: InitGuide<T>) => { 
+  const initGuide = getInitConfig(config);
+
+  const {
+    StyleGuideProvider,
+    useStyleGuideState,
+    useStyleGuideUpdater,
+  } = newContext({
+    name: 'StyleGuide',
+    initState: initGuide,
+    reducer,
+  } as const);
+
+  const useStyleGuide = () => {
+    const base = useStyleGuideState();
+    const set = useStyleGuideUpdater();
+
+    const helpers = useMemo(() => {
+      const setTheme = (themeName: keyof typeof base.themes) => {
+        set([Actions.THEME, themeName]);
+      };
+  
+      const activeTheme = (data: any) => {
+        return data[base.theme.name] || data?.default;
+      }
+  
+      const createStyle = (rule: CSS_Rule) => {
+        const format = base.breakPoints.map((value) => (
+          `@media (min-width: ${value}px)`
+        ));
+        const calc = facepaint(format);
+        const create = calc(rule);
+        return create as CSS_Rule_Facepaint;
+      };
+  
+      const createStyles = (rules: CSS_Rules) => {
+        const base = Object.entries(rules) as Entries<T>;
+        const create = base.reduce((pre: any, [key, value]) => {
+          return { ...pre, [key]: createStyle(value as CSS_Rule) };
+        }, {});
+        return create as CSS_Rules_Facepaint;
+      };
+  
+      return {
+        createStyles, createStyle, actions: {
+          setTheme, activeTheme,
+        },
+      };
+    }, [base, set]);
+
+    return {
+      ...base,
+      ...helpers,
+    };
   }
-  if (!themeNames.length) return null;
-  if (themes[root.initTheme]) return themes[root.initTheme];
-  return themes[themeNames[0]];
-};
 
-const getRootConfig = (payload: any) => {
-  const root = formatConfigData({ payload, base: DEFAUT_CONFIG });
-  const themes = formtaThemesData(payload);
-  const theme = getActiveTheme({ root, themes });
-  return { root, theme, themes };
-};
+  return {
+    StyleGuideProvider,
+    useStyleGuide,
+  };
+}
 
-const useCreateStylesGuide = (payload: any): boolean => {
-  const stylesGuide: Guide = useStylesState();
-  const updateGuide = useStylesUpdater();
-  const [themes, setThemes] = useState<Themes>({});
-  const [ready, setReady] = useState<boolean>(false);
-
-  // FUNCS
-  const setTheme: SetTheme = useCallback(
-    (name: string) => {
-      updateGuide(['SET_THEME', themes[name]]);
-    },
-    [themes, updateGuide],
-  );
-
-  const css: Css = useCallback(
-    (rule) => {
-      const breakPoints = stylesGuide.root.breakPoints || [];
-      const format = breakPoints.map((value) => `@media (min-width: ${value}px)`);
-      const calc = facepaint(format);
-      const create = calc(rule);
-      return create;
-    },
-    [stylesGuide.root],
-  );
-
-  const scss: Scss = useCallback(
-    (rules) => {
-      const base = Object.entries(rules);
-      const create = base.reduce((pre, [key, value]) => {
-        return { ...pre, [key]: css(value) };
-      }, {});
-      return create;
-    },
-    [css],
-  );
-
-  // AUTO
-  useEffect(() => {
-    const { root, theme, themes } = getRootConfig(payload);
-    updateGuide(['SET_CONFIG', { root, theme }]);
-    setThemes(themes);
-    return () => {};
-  }, []);
-
-  useEffect(() => {
-    updateGuide(['PUT_CONFIG', { setTheme, css, scss }]);
-    setReady(!isEmpty(stylesGuide));
-    return () => {};
-  }, [stylesGuide.root]);
-
-  return ready;
-};
-
-const useStyleGuide: () => Guide = useStylesState;
-
-export { StyleGuideProvider, useCreateStylesGuide, useStyleGuide };
+export default createStyleGuide;

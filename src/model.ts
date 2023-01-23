@@ -1,43 +1,59 @@
 import type * as CSS from 'csstype';
-import { DynamicStyle } from 'facepaint';
+import { ValueOf } from 'next/dist/shared/lib/constants';
 
 // DEFAULT SETTINGS
 // base
 const breakPoints = [360, 680, 960, 1140, 1440];
 
 const colors = {
-  // primary: '#0f172a',
+  primary: '#0f172a',
 };
 
 const fonts = {
-  // display: 'Source Serif Pro Georgia serif',
+  display: 'Source Serif Pro Georgia serif',
 };
 
 // components
-// const baseProps = {
-//   texts: {
-//     fontSize: '1em',
-//     fontWeight: 400,
-//     whiteSpace: 'pre-line',
-//   },
-//   elements: {
-//     display: 'flex',
-//   }
-// };
+const baseProps = {
+  texts: {
+    fontSize: '1em',
+    fontWeight: 400,
+    whiteSpace: 'pre-line',
+  },
+  elements: {
+    display: 'flex',
+  }
+};
 
 const texts = {
-  // p: {
-  //   ...baseProps.texts,
-  //   fontFamily: fonts.display,
-  //   color: colors.primary[700],
-  // },
+  p: {
+    ...baseProps.texts,
+    fontFamily: fonts.display,
+    color: colors.primary[700],
+  },
 };
 
 const atoms = {
-  // row: {
-  //   ...baseProps.elements,
-  //   flexDirection: 'row',
-  // }
+  row: {
+    ...baseProps.elements,
+    flexDirection: 'row',
+  }
+};
+
+const theme = {
+  name: 'theme',
+  colors,
+  fonts,
+  texts,
+  atoms,
+};
+
+export const emptyTheme = {
+  name: '',
+  colors: {},
+  fonts: {},
+  texts: {},
+  atoms: {},
 };
 
 // config
@@ -47,49 +63,98 @@ const defaultConfig = {
   fonts,
   texts,
   atoms,
+  themes: { theme },
+  initTheme: 'theme',
+  baseTheme: 'theme',
 };
 
+// helper types
+// type FrstParamFn<T> = T extends (param: infer U) => any ? U : T;
+// type ReturnFn<T> = T extends (param: any) => infer U ? U : T;
+
 // types
-export type BreakPoints = number[];
-export type Colors = { [name: string]: CSS.Properties<'color'> | any };
-export type CssRule = CSS.Properties<any | any[]>;
-export type CssRules = { [name: string]: CssRule };
-export type Css = (rule: CssRule) => DynamicStyle[];
-export type Scss = (rules: CssRules) => { [name: string]: DynamicStyle[] };
-export type SetTheme = (name: string) => void;
 
-export interface Theme {
-  name?: string;
+export type Entries<T> = { [K in keyof T]: [K, T[K]]; }[keyof T][];
+
+export type CSS_Rule = {[K in keyof CSS.Properties]: CSS.Properties[K] | CSS.Properties[K][] };
+
+export type CSS_Rule_Facepaint = CSS_Rule[];
+
+export type CSS_Rules = Record<string, CSS_Rule>;
+
+export type CSS_Rules_Facepaint = Record<string, CSS_Rule_Facepaint>;
+
+export type Flags<T> = {
+  [Property in keyof T]: boolean;
+};
+
+export type Colors = Record<string, CSS.Properties['color']>;
+export type Fonts = Record<string, string>;
+export type Texts = Record<string, CSS.Properties>;
+export type Atoms = Record<string, CSS.Properties>;
+
+export type KnownTheme = {
   colors?: Colors;
-  fonts?: CssRules;
-  texts?: CssRules;
-  atoms?: CssRules;
-}
+  fonts?: Fonts;
+  texts?: Texts;
+  atoms?: Atoms;
+};
 
-export interface Themes {
-  [name: string]: Theme;
-}
+export type KnownBaseTheme = {
+  name: string;
+  colors: Colors;
+  fonts: Fonts;
+  texts: Texts;
+  atoms: Atoms;
+};
 
-export interface Root {
-  breakPoints?: BreakPoints;
+export type KnownRoot = {
   colors?: Colors;
-  fonts?: CssRules;
-  texts?: CssRules;
-  atoms?: CssRules;
-  initTheme?: string;
-  baseTheme?: string;
-  themes?: Themes;
-}
+  fonts?: Fonts;
+  texts?: Texts;
+  atoms?: Atoms;
+};
 
-export interface Helpers {
-  css: Css;
-  scss: Scss;
-  setTheme: SetTheme;
-}
+type KnownThemes = Record<string, KnownTheme>;
 
-export interface Guide extends Helpers {
-  root: Root;
-  theme?: Theme;
-}
+export type KnownInitGuide = {
+  activeTheme?: string;
+  baseTheme?: keyof KnownThemes;
+  breakPoints: number[];
+  themes?: KnownThemes;
+} & KnownRoot;
+
+export type KnownBaseGuide = {
+  root: KnownRoot;
+  theme: KnownBaseTheme;
+  themes: Record<string, KnownBaseTheme>;
+  themesFlags: Record<string, boolean>;
+  breakPoints: number[];
+};
+
+export type Theme<T> = T[keyof T]
+& { name: keyof T };
+
+export type Root<T> = Omit<T, `
+    themes
+  | baseTheme
+  | activeTheme
+  | breakPoints
+`>;
+
+export type BaseGuide<T> = T extends KnownInitGuide ? {
+  theme: Theme<T['themes']>;
+  themes: T['themes'];
+  themesFlags: Flags<T['themes']>;
+  breakPoints: T['breakPoints'];
+  root: Root<T>;
+} & KnownBaseGuide: never;
+
+
+export type InitGuide<T> = T extends KnownInitGuide ? T : KnownInitGuide;
+
+export enum Actions { 'THEME', 'GUIDE' }
+
+export type Reducer = (p1: any, p2: [Actions, any]) => any;
 
 export default defaultConfig;
