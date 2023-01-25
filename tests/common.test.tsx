@@ -5,7 +5,6 @@ import 'jest-canvas-mock';
 
 import createStyleGuide from '../src';
 
-
 describe('Common render', () => {
   it('renders without crashing', () => {
     const { StyleGuideProvider } = createStyleGuide({
@@ -60,7 +59,7 @@ describe('Common render', () => {
     render(
       <StyleGuideProvider>
         <React.Fragment />
-      </StyleGuideProvider>
+      </StyleGuideProvider>,
     );
   });
 });

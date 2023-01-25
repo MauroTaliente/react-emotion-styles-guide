@@ -71,18 +71,18 @@ export type KnownBaseGuide = {
 
 export type BaseGuide<T> = T extends KnownInitGuide
   ? KnownBaseGuide & {
-    breakPoints: T['breakPoints'];
-    root: T['root'];
-    theme: T['themes'][number];
-    themes: T['themes'];
-    helpers: {
-      setTheme: (n: T['themes'][number]['name']) => void;
-    };
-    state: {
-      themesFlags: Record<T['themes'][number]['name'], boolean>;
-      tagsFlags: Record<T['themes'][number]['tags'][number], boolean>;
-    };
-  }
+      breakPoints: T['breakPoints'];
+      root: T['root'];
+      theme: T['themes'][number];
+      themes: T['themes'];
+      helpers: {
+        setTheme: (n: T['themes'][number]['name']) => void;
+      };
+      state: {
+        themesFlags: Record<T['themes'][number]['name'], boolean>;
+        tagsFlags: Record<T['themes'][number]['tags'][number], boolean>;
+      };
+    }
   : KnownBaseGuide;
 
 export enum Actions {
