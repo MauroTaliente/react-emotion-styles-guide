@@ -1,4 +1,6 @@
 import React from 'react';
+import { css } from '@emotion/react';
+
 import { useStyleGuide } from '../styles';
 
 declare module 'react' {
@@ -6,20 +8,23 @@ declare module 'react' {
     css?: any
   }
 }
+
 const GuideTest = () => {
   const {
-    createStyle,
-    createStyles,
-    actions: {setTheme},
-    theme: { name, colors, atoms, texts },
-    root,
+    breakPoints,
+    helpers: { setTheme, styleSheets },
+    theme: { name, colors, fontFamily },
   } = useStyleGuide();
 
   const change = () => {
-    setTheme(name === 'dark' ? 'ligth' : 'dark');
+    const next = (() => {
+      if (name === 'themeMila') return 'themePancho';
+      return 'themeMila';
+    })()
+    setTheme(next);
   }
 
-  const styles = createStyles({
+  const styles = styleSheets({
     container: {
       display: 'flex',
       backgroundColor: colors.bgPrimary,
@@ -29,12 +34,17 @@ const GuideTest = () => {
       justifyContent: 'center',
       alignItems: 'center',
     },
-    title: {
-      ...texts.h1,
-      paddingBottom: '1em',
+    h1: {
+      paddingBottom: '2rem',
+      fontSize: '3rem',
+      fontFamily: fontFamily.display,
+    },
+    p: {
+      paddingBottom: '2rem',
     },
     button: {
-      ...atoms.button,
+      display: 'flex'
+      // ...atoms.button,
     },
   });
 
@@ -42,15 +52,22 @@ const GuideTest = () => {
     <div
       css={styles.container}
     >
-      <h1 css={styles.title}>
-        Hi this is style guide!
-      </h1>
-      <button
-        css={styles.button}
-        onClick={change}
+      <div
+        // css={atoms.card}
       >
-        change Theme
-      </button>
+        <h1 css={[styles.h1]}>
+          Hi this is style guide!
+        </h1>
+        <p css={[styles.p]}>
+          Esta libreria esta pensada para hacer muchos componentes
+        </p>
+        <button
+          css={[styles.button]}
+          onClick={change}
+        >
+          change Theme
+        </button>
+      </div>
     </div>
   );
 };
