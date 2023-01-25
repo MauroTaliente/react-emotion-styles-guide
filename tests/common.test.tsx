@@ -25,29 +25,64 @@ import createStyleGuide from "../src";
 describe('Common render', () => {
   it('renders without crashing', () => {
     const { StyleGuideProvider } = createStyleGuide({
-      activeTheme: 'ligth',
-      baseTheme: 'ligth',
-      breakPoints: [640, 1140],
-      colors: {
-        brand: 'red',
+      breakPoints: [360, 720],
+      initThemeName: 'themeMila',
+      root: {
+        colors: { color: '#eaeaea' },
+        fontFamily: { display: 'Font Family' },
       },
-      themes: {
-        ligth: {
+      scheme: {
+        name: ['themeMila', 'themePancho'],
+        tags: ['dark', 'light', 'rounded'],
+        colors: [
+          'acent',
+          'primary',
+          'secondary',
+          'ngAcent',
+          'bgPrimary',
+          'bgSecondary',
+        ],
+        fontFamily: [
+          'display',
+          'body',
+        ],
+      },
+      themes: [
+        {
+          name: 'themeMila',
+          tags: ['dark', 'rounded'],
           colors: {
-            acent: '#34d399',
-            primary: '#0f172a',
-            secondary: '#eaeaea',
+            acent: '#9e8de5',
+            primary: '#0f0f11',
+            secondary: '#393e43',
+            ngAcent: '#ffffff',
+            bgPrimary: '#ffffff',
+            bgSecondary: '#edf0fa',
+          },
+          fontFamily: {
+            display: 'Unbounded',
+            body: 'Raleway',
           },
         },
-        dark: {
+        {
+          name: 'themePancho',
+          tags: ['light'],
           colors: {
-            acent: '#34d399',
-            primary: '#eaeaea',
-            secondary: '#0f172a',
+            acent: '#ff4e30',
+            primary: '#020202',
+            secondary: '#747474',
+            ngAcent: '#f0f0f0',
+            bgPrimary: '#f0f0f0',
+            bgSecondary: '#ffffff',
+          },
+          fontFamily: {
+            display: 'Playfair Display',
+            body: 'IBM Plex Sans',
           },
         },
-      },
-    });
+      ],
+    } as const);
+
     render(<StyleGuideProvider />);
   });
 });
