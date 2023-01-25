@@ -4,13 +4,13 @@ const {
   StyleGuideProvider,
   useStyleGuide,
 } = createStyleGuide({
-  breakPoints: [360, 720] as const,
-  initThemeName: 'themeMila' as const,
+  breakPoints: [360, 720],
+  initThemeName: 'themeMila',
   // whithAtoms: true, ?
   root: {
     colors: { color: '#eaeaea' },
     fontFamily: { display: 'Font Family' },
-  } as const,
+  },
   scheme: {
     name: ['themeMila', 'themePancho'],
     tags: ['dark', 'light', 'rounded'],
@@ -26,7 +26,7 @@ const {
       'display',
       'body',
     ],
-  } as const,
+  },
   themes: [
     {
       name: 'themeMila',
@@ -43,7 +43,7 @@ const {
         display: 'Unbounded',
         body: 'Raleway',
       },
-    } as const,
+    },
     {
       name: 'themePancho',
       tags: ['light'],
@@ -58,7 +58,7 @@ const {
       fontFamily: {
         display: 'Playfair Display',
         body: 'IBM Plex Sans',
-      } as const,
+      },
       // baseThemeName: 'theme_mila', ?
     },
   ],
@@ -66,7 +66,6 @@ const {
 
 // TODO meter texts adentro de atoms son lo mismo
 // crear funcion createAtoms 
-
 
 export {
   StyleGuideProvider,

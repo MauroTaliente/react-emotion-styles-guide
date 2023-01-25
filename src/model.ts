@@ -39,7 +39,7 @@ export type KnownTheme = {
 
 export type KnownRoot = {
   colors: Colors;
-  fontFamily:  Fonts;
+  fontFamily: Fonts;
 };
 
 export type KnownInitGuide = {
@@ -62,6 +62,11 @@ export type KnownBaseGuide = {
     mq: Record<number, string>,
     mqCss: (r: CSS_Rule) => facepaint.DynamicStyle;
     styleSheets: <S extends CSS_Rules>(r: S) => Record<keyof S, any>;
+  };
+  helpers: {
+    setTheme: (n: string) => void;
+  };
+  state: {
     themesFlags: Record<string, boolean>;
     tagsFlags: Record<string, boolean>;
   };
@@ -74,6 +79,9 @@ export type BaseGuide<T> = T extends KnownInitGuide
     theme: T['themes'][number];
     themes: T['themes'];
     helpers: {
+      setTheme: (n: T['themes'][number]['name']) => void;
+    };
+    state: {
       themesFlags: Record<T['themes'][number]['name'], boolean>;
       tagsFlags: Record<T['themes'][number]['tags'][number], boolean>;
     }

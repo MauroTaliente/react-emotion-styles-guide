@@ -125,7 +125,7 @@ const createObjfromRule = (type: any) =>
   }, {});
 
 // INI CONFIG
-export const getInitConfig = <T,>(init: InitGuide<T>) => {
+export const getInitConfig = <T extends KnownInitGuide>(init: InitGuide<T>) => {
   // EMPTY INIT
   const empty = {
     breakPoints: [],
@@ -195,17 +195,6 @@ export const getInitConfig = <T,>(init: InitGuide<T>) => {
   verifyScheme(themesNames, scheme.name, VERIFY.EQ, true);
   // active theme
   const theme = find(({ name }: KnownTheme) => name === initThemeName)(themes) || empty.theme;
-  // themes flags
-  const themesFlags = reduce((pre: object, { name }: KnownTheme) => {
-    return mergeDeepRight(pre, { [name]: name === initThemeName });
-  }, {})(themes);
-  // tags flags
-  const tagsFlags = reduce((pre: object, { tags }: KnownTheme) => {
-    const inners = reduce((pre: object, tag: string) => {
-      return mergeDeepRight(pre, { [tag]: includes(tag)(tags) });
-    }, {})(tags);
-    return mergeDeepRight(pre, inners);
-  }, {})(themes);
 
   return {
     breakPoints,
@@ -216,8 +205,6 @@ export const getInitConfig = <T,>(init: InitGuide<T>) => {
       mq,
       mqCss,
       styleSheets,
-      themesFlags,
-      tagsFlags,
     },
   } as unknown as BaseGuide<T>;
 };
@@ -232,7 +219,7 @@ const reducer: Reducer = (data, [action, payload]) => {
   return data;
 };
 
-const createStyleGuide = <T,>(config: InitGuide<T>) => {
+const createStyleGuide = <T extends KnownInitGuide>(config: InitGuide<T>) => {
   const initGuide: BaseGuide<T> = getInitConfig(config);
 
   const { StyleGuideProvider, useStyleGuideState, useStyleGuideUpdater } = newContext({
@@ -246,14 +233,30 @@ const createStyleGuide = <T,>(config: InitGuide<T>) => {
     const set = useStyleGuideUpdater();
 
     const helpers = useMemo(() => {
-      const setTheme = (themeName: string) => {
+      type Name = BaseGuide<T>['themes'][number]['name'];
+      const setTheme = (themeName: Name) => {
         set([Actions.THEME, themeName]);
       };
       return { setTheme };
     }, [set]);
 
+    const state = useMemo(() => {
+      // themes flags
+      const themesFlags = reduce((pre: object, { name }: KnownTheme) => {
+        return mergeDeepRight(pre, { [name]: name === base.theme.name });
+      }, {})(base.themes);
+      // tags flags
+      const tagsFlags = reduce((pre: object, { tags }: KnownTheme) => {
+        const inners = reduce((pre: object, tag: string) => {
+          return mergeDeepRight(pre, { [tag]: includes(tag)(base.theme.tags) });
+        }, {})(tags);
+        return mergeDeepRight(pre, inners);
+      }, {})(base.themes);
+      return { themesFlags, tagsFlags };
+    }, [base]);
+
     // return base;
-    return mergeDeepRight(base, { helpers });
+    return mergeDeepRight(base, { helpers, state });
   };
 
   return {

@@ -1,6 +1,4 @@
 import React from 'react';
-import { css } from '@emotion/react';
-
 import { useStyleGuide } from '../styles';
 
 declare module 'react' {
@@ -14,6 +12,9 @@ const GuideTest = () => {
     breakPoints,
     helpers: { setTheme, styleSheets },
     theme: { name, colors, fontFamily },
+    state: {
+      themesFlags: { themeMila },
+      tagsFlags: { rounded }},
   } = useStyleGuide();
 
   const change = () => {
@@ -34,6 +35,21 @@ const GuideTest = () => {
       justifyContent: 'center',
       alignItems: 'center',
     },
+    content: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    card: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-end',
+      justifyContent: 'center',
+      padding: '4em 2em 2em 2em',
+      backgroundColor: colors.bgSecondary,
+      borderRadius: rounded ? '1em' : '0.25em',
+    },
     h1: {
       paddingBottom: '2rem',
       fontSize: '3rem',
@@ -41,10 +57,21 @@ const GuideTest = () => {
     },
     p: {
       paddingBottom: '2rem',
+      fontFamily: fontFamily.body,
     },
     button: {
-      display: 'flex'
-      // ...atoms.button,
+      display: 'flex',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      width: themeMila ? '25em' : 'auto', 
+      padding: '1em 2em',
+      fontSize: '0.75em',
+      fontFamily: fontFamily.display,
+      borderRadius: rounded ? '1em' : '0.25em',
+      borderColor: 'transparent',
+      color: colors.ngAcent,
+      backgroundColor: colors.acent,
+      cursor: 'pointer',
     },
   });
 
@@ -53,7 +80,7 @@ const GuideTest = () => {
       css={styles.container}
     >
       <div
-        // css={atoms.card}
+        css={themeMila ? styles.card : styles.content}
       >
         <h1 css={[styles.h1]}>
           Hi this is style guide!
