@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/indent */
 import type * as CSS from 'csstype';
 import facepaint from 'facepaint';
 
