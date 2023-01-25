@@ -3,7 +3,6 @@ import * as R from 'ramda';
 import facepaint from 'facepaint';
 import { css } from '@emotion/react';
 import newContext from './helpers/context';
-import { themeBuilder } from './theme';
 
 import {
   InitGuide,
@@ -12,13 +11,7 @@ import {
   Actions,
   CSS_Rule,
   CSS_Rules,
-  CSS_Rule_Facepaint,
-  CSS_Rules_Facepaint,
-  emptyTheme,
-  Entries,
   KnownInitGuide,
-  Colors,
-  Fonts,
   KnownTheme,
 } from './model';
 
@@ -265,4 +258,4 @@ const createStyleGuide = <T extends KnownInitGuide>(config: InitGuide<T>) => {
   };
 };
 
-export { createStyleGuide as default, themeBuilder };
+export { createStyleGuide as default };

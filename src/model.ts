@@ -62,8 +62,6 @@ export type KnownBaseGuide = {
     mq: Record<number, string>,
     mqCss: (r: CSS_Rule) => facepaint.DynamicStyle;
     styleSheets: <S extends CSS_Rules>(r: S) => Record<keyof S, any>;
-  };
-  helpers: {
     setTheme: (n: string) => void;
   };
   state: {
