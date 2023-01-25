@@ -77,7 +77,6 @@ const computedProps = {
   },
 };
 
-
 // Post proccess => TODO analizar bien Atoms
 const post = (computedProps: any) => {
   return {};

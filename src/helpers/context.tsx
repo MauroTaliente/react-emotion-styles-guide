@@ -1,24 +1,16 @@
-import React, {
-  createContext,
-  useReducer,
-  useContext,
-  useCallback,
-  ReactNode,
-  FC,
-} from 'react';
-
+import React, { createContext, useReducer, useContext, useCallback, ReactNode, FC } from 'react';
 
 type O = Record<string, any>;
 
-type ValueOf<T> = T[keyof T];
+// type ValueOf<T> = T[keyof T];
 
-type VerifyInfer<T, Y> = T extends Y ? T : Y;
+// type VerifyInfer<T, Y> = T extends Y ? T : Y;
 
-type InferGeneric<T> = T extends O ? T : O;
+// type InferGeneric<T> = T extends O ? T : O;
 
 type GetString<T> = T extends string ? T : string;
 
-type ChangeKey<B, C, A> = `${GetString<B>}${GetString<C>}${GetString<A>}`
+type ChangeKey<B, C, A> = `${GetString<B>}${GetString<C>}${GetString<A>}`;
 
 type SecondProp<F> = F extends (_: any, n: infer A) => any ? A : never;
 
@@ -28,7 +20,7 @@ type KnownParamsContext = {
   reducer: (_: any, d: any) => any;
 };
 
-type RegProvider = { children?: ReactNode | ReactNode[], value?: any };
+type RegProvider = { children?: ReactNode | ReactNode[]; value?: any };
 
 type MapProvider<T extends O> = {
   [Key in T['name'] as ChangeKey<'', Capitalize<Key>, 'Provider'>]: FC<RegProvider>;
@@ -37,18 +29,15 @@ type MapState<T extends O> = {
   [Key in T['name'] as ChangeKey<'use', Capitalize<Key>, 'State'>]: () => T['initState'];
 };
 type MapUpdater<T extends O> = {
-  [Key in T['name'] as ChangeKey<'use', Capitalize<Key>, 'Updater'>]: () =>(n: SecondProp< T['reducer']>) => any;
+  [Key in T['name'] as ChangeKey<'use', Capitalize<Key>, 'Updater'>]: () => (n: SecondProp<T['reducer']>) => any;
 };
 
-export type Mapper<T> =
-MapProvider<PraramsContext<T>>
-& MapState<PraramsContext<T>>
-& MapUpdater<PraramsContext<T>>;
+export type Mapper<T> = MapProvider<PraramsContext<T>> & MapState<PraramsContext<T>> & MapUpdater<PraramsContext<T>>;
 
 export type PraramsContext<T> = T extends KnownParamsContext ? T : KnownParamsContext;
 export type ReturnContext<T> = T extends KnownParamsContext ? Mapper<PraramsContext<T>> : KnownParamsContext;
 
-const capitalized = (s: string) => s ? s[0].toUpperCase() + s.slice(1) : s;
+const capitalized = (s: string) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 const newContext = <T,>({
   name = '',
@@ -63,9 +52,7 @@ const newContext = <T,>({
     const [store, setStore] = useReducer(reducer, value || initState);
     return (
       <StateContext.Provider value={store}>
-        <UpdaterContext.Provider value={setStore}>
-          {children}
-        </UpdaterContext.Provider>
+        <UpdaterContext.Provider value={setStore}>{children}</UpdaterContext.Provider>
       </StateContext.Provider>
     );
   };

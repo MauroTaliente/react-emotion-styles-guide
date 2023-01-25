@@ -3,7 +3,7 @@ import { useStyleGuide } from '../styles';
 
 declare module 'react' {
   interface Attributes {
-    css?: any
+    css?: any;
   }
 }
 
@@ -14,16 +14,17 @@ const GuideTest = () => {
     theme: { name, colors, fontFamily },
     state: {
       themesFlags: { themeMila },
-      tagsFlags: { rounded }},
+      tagsFlags: { rounded },
+    },
   } = useStyleGuide();
 
   const change = () => {
     const next = (() => {
       if (name === 'themeMila') return 'themePancho';
       return 'themeMila';
-    })()
+    })();
     setTheme(next);
-  }
+  };
 
   const styles = styleSheets({
     container: {
@@ -63,7 +64,7 @@ const GuideTest = () => {
       display: 'flex',
       justifyContent: 'flex-end',
       alignItems: 'center',
-      width: themeMila ? '25em' : 'auto', 
+      width: themeMila ? '25em' : 'auto',
       padding: '1em 2em',
       fontSize: '0.75em',
       fontFamily: fontFamily.display,
@@ -76,22 +77,11 @@ const GuideTest = () => {
   });
 
   return (
-    <div
-      css={styles.container}
-    >
-      <div
-        css={themeMila ? styles.card : styles.content}
-      >
-        <h1 css={[styles.h1]}>
-          Hi this is style guide!
-        </h1>
-        <p css={[styles.p]}>
-          Esta libreria esta pensada para hacer muchos componentes
-        </p>
-        <button
-          css={[styles.button]}
-          onClick={change}
-        >
+    <div css={styles.container}>
+      <div css={themeMila ? styles.card : styles.content}>
+        <h1 css={[styles.h1]}>Hi this is style guide!</h1>
+        <p css={[styles.p]}>Esta libreria esta pensada para hacer muchos componentes</p>
+        <button css={[styles.button]} onClick={change}>
           change Theme
         </button>
       </div>

@@ -1,19 +1,10 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import * as R from 'ramda';
 import facepaint from 'facepaint';
 import { css } from '@emotion/react';
 import newContext from './helpers/context';
 
-import {
-  InitGuide,
-  BaseGuide,
-  Reducer,
-  Actions,
-  CSS_Rule,
-  CSS_Rules,
-  KnownInitGuide,
-  KnownTheme,
-} from './model';
+import { InitGuide, BaseGuide, Reducer, Actions, CSS_Rule, CSS_Rules, KnownInitGuide, KnownTheme } from './model';
 
 const {
   toString,
@@ -54,26 +45,16 @@ enum VERIFY {
 }
 
 // VRIFY SCHEME AND FORM
-const printVerifyMesage = (
-  printType: PRINT_TYPE,
-  v: VERIFY,
-  expected: any,
-  received: any,
-) => {
+const printVerifyMesage = (printType: PRINT_TYPE, v: VERIFY, expected: any, received: any) => {
   // create message by v:
   let mesage = 'Ups missing error rule.';
   if (v === VERIFY.TY)
     mesage = `This element: ${toString(received)} does not instead of ${toString(type(expected()))}.`;
-  if (v === VERIFY.TY_IN
-    || v === VERIFY.VALUES_TY_IN_ARR
-    || v === VERIFY.KEYS_TY_IN_ARR)
+  if (v === VERIFY.TY_IN || v === VERIFY.VALUES_TY_IN_ARR || v === VERIFY.KEYS_TY_IN_ARR)
     mesage = `This element: ${toString(received)} does not contain only ${toString(type(expected()))}'.`;
   if (v === VERIFY.EQ || v === VERIFY.KEYS_EQ_KEYS)
     mesage = `This element: ${toString(received)} does not match to schema: ${toString(expected)}.`;
-  if (v === VERIFY.OBJ_IN_OBJ
-    || v === VERIFY.KEYS_IN_KEYS
-    || v === VERIFY.KEY_IN_ARR
-    || v === VERIFY.ARR_IN_ARR)
+  if (v === VERIFY.OBJ_IN_OBJ || v === VERIFY.KEYS_IN_KEYS || v === VERIFY.KEY_IN_ARR || v === VERIFY.ARR_IN_ARR)
     mesage = `This element: ${toString(received)} is not included in the scheme: ${toString(expected)}.`;
   // print rules:
   if (printType === PRINT_TYPE.ERROR) throw new Error(mesage);
@@ -112,10 +93,10 @@ const createMediaQueries = reduce((pre: object, value: number) => {
   return mergeDeepRight(pre, { [value]: `@media (min-width: ${value}px)` });
 }, {});
 
-const createObjfromRule = (type: any) =>
-  reduce((pre: object, value: number) => {
-    return mergeDeepRight(pre, { [value]: type });
-  }, {});
+// const createObjfromRule = (type: any) =>
+//   reduce((pre: object, value: number) => {
+//     return mergeDeepRight(pre, { [value]: type });
+//   }, {});
 
 // INI CONFIG
 export const getInitConfig = <T extends KnownInitGuide>(init: InitGuide<T>) => {
@@ -149,7 +130,7 @@ export const getInitConfig = <T extends KnownInitGuide>(init: InitGuide<T>) => {
   // media quieris map
   const mq = createMediaQueries(breakPoints);
   // media quieris with facepaint and css function helper
-  const mqCss = (rule: CSS_Rule, ...args: any[]) => {
+  const mqCss = (rule: CSS_Rule) => {
     const format = map((point: number) => mq[point])(breakPoints);
     const build = facepaint(format);
     return css(build(rule));

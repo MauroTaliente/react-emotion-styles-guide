@@ -1,9 +1,6 @@
 import createStyleGuide from 'react-emotion-styles-guide';
 
-const {
-  StyleGuideProvider,
-  useStyleGuide,
-} = createStyleGuide({
+const { StyleGuideProvider, useStyleGuide } = createStyleGuide({
   breakPoints: [360, 720],
   initThemeName: 'themeMila',
   root: {
@@ -13,18 +10,8 @@ const {
   scheme: {
     name: ['themeMila', 'themePancho'],
     tags: ['dark', 'light', 'rounded'],
-    colors: [
-      'acent',
-      'primary',
-      'secondary',
-      'ngAcent',
-      'bgPrimary',
-      'bgSecondary',
-    ],
-    fontFamily: [
-      'display',
-      'body',
-    ],
+    colors: ['acent', 'primary', 'secondary', 'ngAcent', 'bgPrimary', 'bgSecondary'],
+    fontFamily: ['display', 'body'],
   },
   themes: [
     {
@@ -62,7 +49,4 @@ const {
   ],
 } as const);
 
-export {
-  StyleGuideProvider,
-  useStyleGuide,
-};
+export { StyleGuideProvider, useStyleGuide };

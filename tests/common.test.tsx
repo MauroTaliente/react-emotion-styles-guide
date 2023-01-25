@@ -1,26 +1,10 @@
-import * as React from 'react';
+import React from 'react';
 import { render } from '@testing-library/react';
 
 import 'jest-canvas-mock';
 
-import createStyleGuide from "../src";
+import createStyleGuide from '../src';
 
-// test types =>
-// const test = {
-//   name: 'Test',
-//   initState: { l1: { l2: { l3: 'hola' }}},
-//   reducer: (v: any) => v,
-// } as const;
-
-// type Test = typeof test;
-// type TestInfer = Inf<Test>;
-
-// const {
-//   initState,
-// } = newContext(test);
-
-// console.log(initState.l1.l2.l3);
-// test types <=
 
 describe('Common render', () => {
   it('renders without crashing', () => {
@@ -34,18 +18,8 @@ describe('Common render', () => {
       scheme: {
         name: ['themeMila', 'themePancho'],
         tags: ['dark', 'light', 'rounded'],
-        colors: [
-          'acent',
-          'primary',
-          'secondary',
-          'ngAcent',
-          'bgPrimary',
-          'bgSecondary',
-        ],
-        fontFamily: [
-          'display',
-          'body',
-        ],
+        colors: ['acent', 'primary', 'secondary', 'ngAcent', 'bgPrimary', 'bgSecondary'],
+        fontFamily: ['display', 'body'],
       },
       themes: [
         {
@@ -83,6 +57,10 @@ describe('Common render', () => {
       ],
     } as const);
 
-    render(<StyleGuideProvider />);
+    render(
+      <StyleGuideProvider>
+        <React.Fragment />
+      </StyleGuideProvider>
+    );
   });
 });

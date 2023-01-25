@@ -18,8 +18,8 @@ export const emptyConfig = {
 };
 
 // types
-export type Entries<T> = { [K in keyof T]: [K, T[K]]; }[keyof T][];
-export type CSS_Rule = {[K in keyof CSS.Properties]: CSS.Properties[K] | CSS.Properties[K][] };
+export type Entries<T> = { [K in keyof T]: [K, T[K]] }[keyof T][];
+export type CSS_Rule = { [K in keyof CSS.Properties]: CSS.Properties[K] | CSS.Properties[K][] };
 export type CSS_Rule_Facepaint = CSS_Rule[];
 export type CSS_Rules = Record<string, CSS_Rule>;
 export type CSS_Rules_Facepaint = Record<string, CSS_Rule_Facepaint>;
@@ -31,7 +31,7 @@ export type Fonts = Record<string, string>;
 // export type Atoms = Record<string, CSS.Properties>;
 
 export type KnownTheme = {
-  name: string,
+  name: string;
   tags: readonly string[];
   colors: Colors;
   fontFamily: Fonts;
@@ -50,8 +50,7 @@ export type KnownInitGuide = {
   themes: readonly KnownTheme[];
 };
 
-export type InitGuide<T> = T extends KnownInitGuide ?
-  T : KnownInitGuide;
+export type InitGuide<T> = T extends KnownInitGuide ? T : KnownInitGuide;
 
 export type KnownBaseGuide = {
   breakPoints: readonly number[];
@@ -59,7 +58,7 @@ export type KnownBaseGuide = {
   theme: KnownTheme;
   themes: readonly KnownTheme[];
   helpers: {
-    mq: Record<number, string>,
+    mq: Record<number, string>;
     mqCss: (r: CSS_Rule) => facepaint.DynamicStyle;
     styleSheets: <S extends CSS_Rules>(r: S) => Record<keyof S, any>;
     setTheme: (n: string) => void;
@@ -82,9 +81,13 @@ export type BaseGuide<T> = T extends KnownInitGuide
     state: {
       themesFlags: Record<T['themes'][number]['name'], boolean>;
       tagsFlags: Record<T['themes'][number]['tags'][number], boolean>;
-    }
-  } : KnownBaseGuide;
+    };
+  }
+  : KnownBaseGuide;
 
-export enum Actions { 'THEME', 'GUIDE' }
+export enum Actions {
+  'THEME',
+  'GUIDE',
+}
 
 export type Reducer = (p1: any, p2: [Actions, any]) => any;

@@ -19,11 +19,13 @@
     "indent": [2, 2, { "SwitchCase": 1}],
     "prettier/prettier": "off",
     "react-hooks/rules-of-hooks": "error",
+    "react/react-in-jsx-scope": "off",
     "react-hooks/exhaustive-deps": "warn",
     "@typescript-eslint/indent": ["error", 2],
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/no-empty-function": "off",
     "react/no-unknown-property": ["error", { "ignore": ["css"] }]
   },

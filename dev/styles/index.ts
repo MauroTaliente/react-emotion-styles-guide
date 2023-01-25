@@ -1,9 +1,6 @@
-import createStyleGuide from "../../src";
+import createStyleGuide from '../../src';
 
-const {
-  StyleGuideProvider,
-  useStyleGuide,
-} = createStyleGuide({
+const { StyleGuideProvider, useStyleGuide } = createStyleGuide({
   breakPoints: [360, 720],
   initThemeName: 'themeMila',
   // whithAtoms: true, ?
@@ -14,18 +11,8 @@ const {
   scheme: {
     name: ['themeMila', 'themePancho'],
     tags: ['dark', 'light', 'rounded'],
-    colors: [
-      'acent',
-      'primary',
-      'secondary',
-      'ngAcent',
-      'bgPrimary',
-      'bgSecondary',
-    ],
-    fontFamily: [
-      'display',
-      'body',
-    ],
+    colors: ['acent', 'primary', 'secondary', 'ngAcent', 'bgPrimary', 'bgSecondary'],
+    fontFamily: ['display', 'body'],
   },
   themes: [
     {
@@ -65,9 +52,6 @@ const {
 } as const);
 
 // TODO meter texts adentro de atoms son lo mismo
-// crear funcion createAtoms 
+// crear funcion createAtoms
 
-export {
-  StyleGuideProvider,
-  useStyleGuide,
-};
+export { StyleGuideProvider, useStyleGuide };
