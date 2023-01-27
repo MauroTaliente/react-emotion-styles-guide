@@ -29,7 +29,6 @@ export type Flags<T> = {
 };
 export type Colors = Record<string, string>;
 export type Fonts = Record<string, string>;
-// export type Atoms = Record<string, CSS.Properties>;
 
 export type KnownTheme = {
   name: string;
@@ -58,10 +57,11 @@ export type KnownBaseGuide = {
   root: KnownRoot;
   theme: KnownTheme;
   themes: readonly KnownTheme[];
+  atoms: CSS_Rules,
   helpers: {
     mq: Record<number, string>;
     mqCss: (r: CSS_Rule) => facepaint.DynamicStyle;
-    styleSheets: <S extends CSS_Rules>(r: S) => Record<keyof S, any>;
+    styleSheets: <S extends CSS_Rules>(r: S) => Record<keyof S, CSS_Rule>;
     setTheme: (n: string) => void;
   };
   state: {

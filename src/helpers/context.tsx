@@ -1,6 +1,4 @@
-import React, { createContext, useReducer, useContext, useCallback, ReactNode, FC } from 'react';
-
-type O = Record<string, any>;
+import React, { createContext, useReducer, useContext, useCallback, FC } from 'react';
 
 // type ValueOf<T> = T[keyof T];
 
@@ -12,44 +10,44 @@ type GetString<T> = T extends string ? T : string;
 
 type ChangeKey<B, C, A> = `${GetString<B>}${GetString<C>}${GetString<A>}`;
 
-type SecondProp<F> = F extends (_: any, n: infer A) => any ? A : never;
-
 type KnownParamsContext = {
   name: string;
   initState: any;
   reducer: (_: any, d: any) => any;
 };
 
-type RegProvider = { children?: ReactNode | ReactNode[]; value?: any };
+type Mutate<F> = F extends (_: any, n: infer B) => any ? (n: B) => void : never;
 
-type MapProvider<T extends O> = {
-  [Key in T['name'] as ChangeKey<'', Capitalize<Key>, 'Provider'>]: FC<RegProvider>;
+type MapProvider<T extends KnownParamsContext> = {
+  [Key in T['name'] as ChangeKey<'', Capitalize<Key>, 'Provider'>]: React.FC<any>;
 };
-type MapState<T extends O> = {
+type MapState<T extends KnownParamsContext> = {
   [Key in T['name'] as ChangeKey<'use', Capitalize<Key>, 'State'>]: () => T['initState'];
 };
-type MapUpdater<T extends O> = {
-  [Key in T['name'] as ChangeKey<'use', Capitalize<Key>, 'Updater'>]: () => (n: SecondProp<T['reducer']>) => any;
+type MapUpdater<T extends KnownParamsContext> = {
+  [Key in T['name'] as ChangeKey<'use', Capitalize<Key>, 'Updater'>]: () => Mutate<T['reducer']>;
 };
 
-export type Mapper<T> = MapProvider<PraramsContext<T>> & MapState<PraramsContext<T>> & MapUpdater<PraramsContext<T>>;
+type Mapper<T extends KnownParamsContext> =
+MapProvider<T>
+& MapState<T>
+& MapUpdater<T>;
 
-export type PraramsContext<T> = T extends KnownParamsContext ? T : KnownParamsContext;
-export type ReturnContext<T> = T extends KnownParamsContext ? Mapper<PraramsContext<T>> : KnownParamsContext;
+type ReturnContext<T extends KnownParamsContext> = Mapper<T>;
 
 const capitalized = (s: string) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
-const newContext = <T,>({
+const newContext = <T extends KnownParamsContext>({
   name = '',
   initState,
   reducer = (_: any, d: any) => d,
-}: PraramsContext<T>): ReturnContext<T> => {
+}: T): ReturnContext<T> => {
   name = capitalized(name);
   const StateContext = createContext(initState);
   const UpdaterContext = createContext((s: any) => s);
 
-  const Provider: FC<RegProvider> = ({ children = null, value = null }) => {
-    const [store, setStore] = useReducer(reducer, value || initState);
+  const Provider: FC<any> = ({ children = null }) => {
+    const [store, setStore] = useReducer(reducer, initState);
     return (
       <StateContext.Provider value={store}>
         <UpdaterContext.Provider value={setStore}>{children}</UpdaterContext.Provider>
@@ -80,7 +78,7 @@ const newContext = <T,>({
     [`use${name}Updater`]: useUpdater,
   };
 
-  return context as any;
+  return context as ReturnContext<T>;
 };
 
 export default newContext;
