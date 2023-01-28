@@ -8,7 +8,7 @@ import createStyleGuide from '../src';
 describe('Common render', () => {
   it('renders without crashing', () => {
     const { StyleGuideProvider } = createStyleGuide({
-      breakPoints: [360, 720],
+      breakPoints: { sm: 320 },
       initThemeName: 'themeMila',
       root: {
         colors: { color: '#eaeaea' },

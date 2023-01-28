@@ -1,10 +1,20 @@
-import { useMemo } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import * as R from 'ramda';
 import facepaint from 'facepaint';
 import { css } from '@emotion/react';
 import newContext from './helpers/context';
 
-import { InitGuide, BaseGuide, Reducer, Actions, CSS_Rule, CSS_Rules, KnownInitGuide, KnownTheme } from './model';
+import {
+  InitGuide,
+  BaseGuide,
+  Reducer,
+  Actions,
+  CSS_Rule,
+  CSS_Rules,
+  KnownInitGuide,
+  KnownTheme,
+  BrakePoints,
+} from './model';
 
 const {
   toString,
@@ -21,9 +31,12 @@ const {
   is,
   intersection,
   find,
+  findIndex,
   // not,
   // and,
 } = R;
+
+const IS_SSR = typeof window === 'undefined';
 
 enum PRINT_TYPE {
   ERROR,
@@ -89,20 +102,64 @@ const verifyScheme = (
 };
 
 // SUPPORT FNS
-const createMediaQueries = reduce((pre: object, value: number) => {
-  return mergeDeepRight(pre, { [value]: `@media (min-width: ${value}px)` });
-}, {});
+const getLayout = () => (IS_SSR ? { width: 0, height: 0 } : { width: window.innerWidth, height: window.innerHeight });
 
-// const createObjfromRule = (type: any) =>
-//   reduce((pre: object, value: number) => {
-//     return mergeDeepRight(pre, { [value]: type });
-//   }, {});
+const useIsomorphicLayoutEffect = IS_SSR ? useLayoutEffect : useEffect;
+
+// export useRefreshLayot posible include in next versions.
+// const useRefreshLayot = () => {
+//   const [layout, setLayout] = useState(getLayout());
+//   const updateLayout = () => setLayout(getLayout());
+//   useIsomorphicLayoutEffect(() => {
+//     updateLayout();
+//     window.addEventListener('resize', updateLayout);
+//     return () => window.removeEventListener('resize', updateLayout);
+//   }, []);
+//   return layout;
+// };
+
+const createMediaFlafs = (bp: BrakePoints, width: number) => {
+  return reduce((pre: object, key: string) => {
+    return mergeDeepRight(pre, { [key]: bp[key] <= width });
+  }, {})(keys(bp));
+};
+
+const useMediaFlags = (bp: BrakePoints, enable: boolean) => {
+  const bpValeus = values(bp);
+  const initLimitMax = find((v: number) => getLayout().width <= v)(bpValeus) || 0;
+  const [limitMax, setLimitMax] = useState(initLimitMax);
+  const limitMaxIndex = findIndex(equals(limitMax))(bpValeus);
+
+  useIsomorphicLayoutEffect(() => {
+    if (enable) {
+      const updateLayout = () => {
+        const width = getLayout().width;
+        const limitMin = bpValeus[limitMaxIndex - 1];
+        if (width >= limitMax) setLimitMax(bpValeus[limitMaxIndex + 1]);
+        if (width < limitMin) setLimitMax(bpValeus[limitMaxIndex - 1]);
+      };
+      updateLayout();
+      window.addEventListener('resize', updateLayout);
+      return () => window.removeEventListener('resize', updateLayout);
+    }
+    return () => {};
+  }, [limitMax, limitMaxIndex, bpValeus]);
+
+  const mediaFlags = createMediaFlafs(bp, limitMax);
+  return mediaFlags;
+};
+
+const createMediaQueries = (brakePoints: BrakePoints) => {
+  return reduce((pre: object, key: string) => {
+    return mergeDeepRight(pre, { [key]: `@media (min-width: ${brakePoints[key]}px)` });
+  }, {})(keys(brakePoints));
+};
 
 // INI CONFIG
 export const getInitConfig = <T extends KnownInitGuide>(init: InitGuide<T>) => {
   // EMPTY INIT
   const empty = {
-    breakPoints: [],
+    breakPoints: {},
     initThemeName: '',
     root: { colors: {}, fontFamily: {} },
     themes: [],
@@ -124,19 +181,20 @@ export const getInitConfig = <T extends KnownInitGuide>(init: InitGuide<T>) => {
 
   // BREAKEPOINTS
   const breakPoints = init.breakPoints || empty.breakPoints;
-  verifyScheme(breakPoints, Array, VERIFY.TY);
-  verifyScheme(breakPoints, Number, VERIFY.TY_IN);
+  verifyScheme(breakPoints, Object, VERIFY.TY);
+  verifyScheme(breakPoints, Number, VERIFY.VALUES_TY_IN_ARR);
   // DERIVED BREAKEPOINTS =>
   // media quieris map
   const mq = createMediaQueries(breakPoints);
   // media quieris with facepaint and css function helper
   const mqCss = (rule: CSS_Rule) => {
-    const format = map((point: number) => mq[point])(breakPoints);
+    const format = map((point: string) => point)(values(mq));
     const build = facepaint(format);
     return css(build(rule));
   };
-  const styleSheets = (rules: CSS_Rules, procces = mqCss) => {
-    return reduce((pre: CSS_Rules, key: string) => {
+  const siCss = (rule: CSS_Rule) => rule;
+  const styleSheets = (rules: CSS_Rules, procces = siCss) => {
+    return reduce((pre: object, key: string) => {
       return mergeDeepRight(pre, { [key]: procces(rules[key] as CSS_Rule) });
     }, {})(keys(rules));
   };
@@ -202,11 +260,12 @@ const createStyleGuide = <T extends KnownInitGuide>(config: InitGuide<T>) => {
     reducer,
   } as const);
 
-  const useStyleGuide = () => {
+  const useStyleGuide = (refreshLevel: 0 | 1 = 0) => {
     const base = useStyleGuideState();
     const set = useStyleGuideUpdater();
+    const mediaFlags = useMediaFlags(base.breakPoints, refreshLevel === 1);
 
-    const helpers = useMemo(() => {
+    const dynamicHelpers = useMemo(() => {
       type Name = BaseGuide<T>['themes'][number]['name'];
       const setTheme = (themeName: Name) => {
         set([Actions.THEME, themeName]);
@@ -214,7 +273,7 @@ const createStyleGuide = <T extends KnownInitGuide>(config: InitGuide<T>) => {
       return { setTheme };
     }, [set]);
 
-    const state = useMemo(() => {
+    const themeState = useMemo(() => {
       // themes flags
       const themesFlags = reduce((pre: object, { name }: KnownTheme) => {
         return mergeDeepRight(pre, { [name]: name === base.theme.name });
@@ -229,8 +288,16 @@ const createStyleGuide = <T extends KnownInitGuide>(config: InitGuide<T>) => {
       return { themesFlags, tagsFlags };
     }, [base]);
 
-    // return base;
-    return mergeDeepRight(base, { helpers, state });
+    const fullGuide = useMemo(
+      () => ({
+        ...base,
+        state: { ...themeState, mediaFlags },
+        helpers: { ...base.helpers, ...dynamicHelpers },
+      }),
+      [base, themeState, dynamicHelpers, mediaFlags],
+    );
+
+    return fullGuide as BaseGuide<T>;
   };
 
   return {

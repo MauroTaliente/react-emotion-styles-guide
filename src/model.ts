@@ -11,7 +11,7 @@ export const emptyTheme = {
   fontFamily: {},
 };
 export const emptyConfig = {
-  breakPoints: [],
+  breakPoints: {},
   initThemeName: '',
   root: { colors: {}, fontFamily: {} },
   themes: [],
@@ -30,6 +30,7 @@ export type Flags<T> = {
 };
 export type Colors = Record<string, string>;
 export type Fonts = Record<string, string>;
+export type BrakePoints = Record<string, number>;
 
 type FacepaintCss = (r: CSS_Rule) => facepaint.DynamicStyle;
 // type EmotionCss = typeof css;
@@ -49,13 +50,13 @@ export type KnownRoot = {
 };
 
 export type KnownInitGuide = {
-  breakPoints: readonly number[];
+  breakPoints: BrakePoints;
   initThemeName: string;
   root: KnownRoot;
   scheme?: {
-    tags?: readonly string[],
-    colors?: readonly string[],
-    fontFamily?: readonly string[],
+    tags?: readonly string[];
+    colors?: readonly string[];
+    fontFamily?: readonly string[];
   };
   themes: readonly KnownTheme[];
 };
@@ -63,11 +64,11 @@ export type KnownInitGuide = {
 export type InitGuide<T> = T extends KnownInitGuide ? T : KnownInitGuide;
 
 export type KnownBaseGuide = {
-  breakPoints: readonly number[];
+  breakPoints: BrakePoints;
   root: KnownRoot;
   theme: KnownTheme;
   themes: readonly KnownTheme[];
-  atoms: CSS_Rules,
+  atoms: CSS_Rules;
   helpers: {
     mq: Record<number, string>;
     mqCss: FacepaintCss;
@@ -75,6 +76,7 @@ export type KnownBaseGuide = {
     setTheme: (n: string) => void;
   };
   state: {
+    mediaFlags: Record<string, boolean>;
     themesFlags: Record<string, boolean>;
     tagsFlags: Record<string, boolean>;
   };
@@ -90,6 +92,7 @@ export type BaseGuide<T> = T extends KnownInitGuide
         setTheme: (n: T['themes'][number]['name']) => void;
       };
       state: {
+        mediaFlags: Record<keyof T['breakPoints'], boolean>;
         themesFlags: Record<T['themes'][number]['name'], boolean>;
         tagsFlags: Record<T['themes'][number]['tags'][number], boolean>;
       };
