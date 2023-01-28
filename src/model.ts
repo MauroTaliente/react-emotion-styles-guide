@@ -52,7 +52,11 @@ export type KnownInitGuide = {
   breakPoints: readonly number[];
   initThemeName: string;
   root: KnownRoot;
-  scheme: any;
+  scheme?: {
+    tags?: readonly string[],
+    colors?: readonly string[],
+    fontFamily?: readonly string[],
+  };
   themes: readonly KnownTheme[];
 };
 
