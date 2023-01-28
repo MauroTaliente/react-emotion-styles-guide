@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/indent */
 import type * as CSS from 'csstype';
 import facepaint from 'facepaint';
-import { css } from '@emotion/react';
+// import { css } from '@emotion/react';
 
 // DEFAULT SETTINGS
 export const emptyTheme = {
@@ -32,8 +32,9 @@ export type Colors = Record<string, string>;
 export type Fonts = Record<string, string>;
 
 type FacepaintCss = (r: CSS_Rule) => facepaint.DynamicStyle;
-type EmotionCss = typeof css;
-type StyleSheets = <S extends CSS_Rules>(r: S, p?: FacepaintCss | EmotionCss) => Record<keyof S, S[keyof S] | S[keyof S][]>;
+// type EmotionCss = typeof css;
+
+type StyleSheets = <S extends Record<string, CSS_Rule>, P>(r: S, p?: P) => S;
 
 export type KnownTheme = {
   name: string;

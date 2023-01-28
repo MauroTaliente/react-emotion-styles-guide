@@ -1,5 +1,6 @@
 import React from 'react';
 import { useStyleGuide } from '../styles';
+import { css } from '@emotion/react';
 
 declare module 'react' {
   interface Attributes {
@@ -9,7 +10,7 @@ declare module 'react' {
 
 const GuideTest = () => {
   const {
-    breakPoints,
+    breakPoints: bp,
     helpers: { setTheme, styleSheets },
     theme: { name, colors, fontFamily },
     state: {
@@ -25,6 +26,73 @@ const GuideTest = () => {
     })();
     setTheme(next);
   };
+
+  const flex = styleSheets({
+    rt: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'flex-start',
+      alignItems: 'flex-start',
+    },
+    ct: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'flex-start',
+    },
+    lt: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'flex-end',
+    },
+    rc: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'flex-end',
+      alignItems: 'flex-end',
+    },
+    cc: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+    },
+    lc: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+    },
+    rb: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'flex-end',
+      alignItems: 'flex-end',
+    },
+    cb: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+    },
+    lb: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+    },
+  }, (s: any) => s);
+
+  const briks = styleSheets({
+    container: {
+      width: '100%',
+      ...flex.cc,
+    },
+    content: {
+      width: `${bp[1]}px`,
+      ...flex.cc,
+      backgroundColor: 'red',
+    }
+  }, css);
 
   const styles = styleSheets({
     container: {
@@ -70,7 +138,7 @@ const GuideTest = () => {
       fontFamily: fontFamily.display,
       borderRadius: rounded ? '1em' : '0.25em',
       borderColor: 'transparent',
-      color: colors.ngAcent,
+      color: [colors.ngAcent, colors.primary],
       backgroundColor: colors.acent,
       cursor: 'pointer',
     },
@@ -81,7 +149,7 @@ const GuideTest = () => {
       <div css={themeMila ? styles.card : styles.content}>
         <h1 css={[styles.h1]}>Hi this is style guide!</h1>
         <p css={[styles.p]}>Esta libreria esta pensada para hacer muchos componentes</p>
-        <button css={[styles.button]} onClick={change}>
+        <button css={styles.button} onClick={change}>
           change Theme
         </button>
       </div>
