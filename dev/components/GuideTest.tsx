@@ -16,8 +16,9 @@ const GuideTest = () => {
     state: {
       themesFlags: { themeMila },
       tagsFlags: { rounded },
+      // mediaFlags,
     },
-  } = useStyleGuide();
+  } = useStyleGuide(0);
 
   const change = () => {
     const next = (() => {
@@ -27,72 +28,78 @@ const GuideTest = () => {
     setTheme(next);
   };
 
-  const flex = styleSheets({
-    rt: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'flex-start',
-      alignItems: 'flex-start',
+  const flex = styleSheets(
+    {
+      rt: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+      },
+      ct: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+      },
+      lt: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'flex-end',
+      },
+      rc: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        alignItems: 'flex-end',
+      },
+      cc: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+      },
+      lc: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+      },
+      rb: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        alignItems: 'flex-end',
+      },
+      cb: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+      },
+      lb: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+      },
     },
-    ct: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'flex-start',
-    },
-    lt: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'flex-end',
-    },
-    rc: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'flex-end',
-      alignItems: 'flex-end',
-    },
-    cc: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'flex-end',
-      alignItems: 'center',
-    },
-    lc: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-    },
-    rb: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'flex-end',
-      alignItems: 'flex-end',
-    },
-    cb: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'flex-end',
-      alignItems: 'center',
-    },
-    lb: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-    },
-  }, (s: any) => s);
+    (s: any) => s,
+  );
 
-  const briks = styleSheets({
-    container: {
-      width: '100%',
-      ...flex.cc,
+  const briks = styleSheets(
+    {
+      container: {
+        width: '100%',
+        ...flex.cc,
+      },
+      content: {
+        width: `${bp[1]}px`,
+        ...flex.cc,
+        backgroundColor: 'red',
+      },
     },
-    content: {
-      width: `${bp[1]}px`,
-      ...flex.cc,
-      backgroundColor: 'red',
-    }
-  }, css);
+    css,
+  );
 
   const styles = styleSheets({
     container: {

@@ -1,7 +1,7 @@
 import createStyleGuide from '../../src';
 
 const { StyleGuideProvider, useStyleGuide } = createStyleGuide({
-  breakPoints: [360, 720],
+  breakPoints: { sm: 640, md: 768, lg: 1024, xl: 1280, sl: 1440, ul: 1920 },
   initThemeName: 'themeMila',
   // whithAtoms: true, ?
   root: {

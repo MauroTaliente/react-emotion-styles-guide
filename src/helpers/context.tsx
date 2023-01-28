@@ -28,10 +28,7 @@ type MapUpdater<T extends KnownParamsContext> = {
   [Key in T['name'] as ChangeKey<'use', Capitalize<Key>, 'Updater'>]: () => Mutate<T['reducer']>;
 };
 
-type Mapper<T extends KnownParamsContext> =
-MapProvider<T>
-& MapState<T>
-& MapUpdater<T>;
+type Mapper<T extends KnownParamsContext> = MapProvider<T> & MapState<T> & MapUpdater<T>;
 
 type ReturnContext<T extends KnownParamsContext> = Mapper<T>;
 
