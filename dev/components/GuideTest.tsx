@@ -16,9 +16,11 @@ const GuideTest = () => {
     state: {
       themesFlags: { themeMila },
       tagsFlags: { rounded },
-      // mediaFlags,
+      mediaFlags,
     },
-  } = useStyleGuide(0);
+  } = useStyleGuide(1);
+
+  // console.log(mediaFlags);
 
   const change = () => {
     const next = (() => {

@@ -32,6 +32,9 @@ const {
   intersection,
   find,
   findIndex,
+  last,
+  head,
+  or,
   // not,
   // and,
 } = R;
@@ -126,14 +129,24 @@ const createMediaFlafs = (bp: BrakePoints, width: number) => {
 
 const useMediaFlags = (bp: BrakePoints, enable: boolean) => {
   const bpValeus = values(bp);
-  const initLimitMax = find((v: number) => getLayout().width <= v)(bpValeus) || 0;
+
+  const initLimitMax = (() => {
+    const borderMax = or(last(bpValeus), 0);
+    const width = getLayout().width;
+    if (width >= borderMax) return borderMax;
+    const limitMaxOn = find((v: number) => width <= v)(bpValeus);
+    return or(limitMaxOn, 0);
+  })();
+
   const [limitMax, setLimitMax] = useState(initLimitMax);
   const limitMaxIndex = findIndex(equals(limitMax))(bpValeus);
 
   useIsomorphicLayoutEffect(() => {
     if (enable) {
       const updateLayout = () => {
+        const borderMax = or(last(bpValeus), 0);
         const width = getLayout().width;
+        if (width >= borderMax) return;
         const limitMin = bpValeus[limitMaxIndex - 1];
         if (width >= limitMax) setLimitMax(bpValeus[limitMaxIndex + 1]);
         if (width < limitMin) setLimitMax(bpValeus[limitMaxIndex - 1]);
