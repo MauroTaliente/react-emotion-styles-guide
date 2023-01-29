@@ -33,10 +33,7 @@ const {
   find,
   findIndex,
   last,
-  head,
   or,
-  // not,
-  // and,
 } = R;
 
 const IS_SSR = typeof window === 'undefined';
