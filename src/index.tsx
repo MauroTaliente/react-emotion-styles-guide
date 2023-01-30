@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import * as R from 'ramda';
 import facepaint from 'facepaint';
 import { css } from '@emotion/react';
@@ -36,7 +36,9 @@ const {
   or,
 } = R;
 
-const IS_SSR = typeof window === 'undefined';
+const IS_SSR = typeof document === 'undefined';
+if (IS_SSR) { React.useLayoutEffect = React.useEffect; }
+const useIsomorphicLayoutEffect = React.useLayoutEffect;
 
 enum PRINT_TYPE {
   ERROR,
@@ -102,9 +104,9 @@ const verifyScheme = (
 };
 
 // SUPPORT FNS
-const getLayout = () => (IS_SSR ? { width: 0, height: 0 } : { width: window.innerWidth, height: window.innerHeight });
-
-const useIsomorphicLayoutEffect = IS_SSR ? useLayoutEffect : useEffect;
+const getLayout = () => IS_SSR
+  ? { width: 0, height: 0 }
+  : { width: window.innerWidth, height: window.innerHeight };
 
 // export useRefreshLayot posible include in next versions.
 // const useRefreshLayot = () => {
