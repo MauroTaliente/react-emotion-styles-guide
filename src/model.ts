@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/indent */
 import type * as CSS from 'csstype';
 import facepaint from 'facepaint';
-// import { css } from '@emotion/react';
+import { FC, ReactElement, ReactNode } from 'react';
 
 // DEFAULT SETTINGS
 export const emptyTheme = {
@@ -20,6 +20,7 @@ export const emptyConfig = {
 };
 
 // types
+export type  WrapFC = FC<{ children: ReactElement }>;
 export type Entries<T> = { [K in keyof T]: [K, T[K]] }[keyof T][];
 export type CSS_Rule = { [K in keyof CSS.Properties]: CSS.Properties[K] | CSS.Properties[K][] };
 export type CSS_Rule_Facepaint = CSS_Rule[];
@@ -59,6 +60,11 @@ export type KnownInitGuide = {
     fontFamily?: readonly string[];
   };
   themes: readonly KnownTheme[];
+  noSsr?: {
+    active: boolean;
+    defer?: boolean,
+    loading?: ReactNode,
+  },
 };
 
 export type InitGuide<T> = T extends KnownInitGuide ? T : KnownInitGuide;

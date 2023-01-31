@@ -1,8 +1,12 @@
 import React, { useMemo, useState } from 'react';
+// utils
 import * as R from 'ramda';
+// styles
 import facepaint from 'facepaint';
 import { css } from '@emotion/react';
+// local utils
 import newContext from './helpers/context';
+import NoSSR from './helpers/NoSSR';
 
 import {
   InitGuide,
@@ -14,6 +18,7 @@ import {
   KnownInitGuide,
   KnownTheme,
   BrakePoints,
+  WrapFC,
 } from './model';
 
 const {
@@ -263,14 +268,38 @@ const reducer: Reducer = (data, [action, payload]) => {
   return data;
 };
 
+const getProvider = (config: KnownInitGuide, BaseProvider: WrapFC) => {
+  const emptyNoSsr = { active: false, loading: null, defer: false };
+  const baseNoSsr = config.noSsr || {};
+  const noSsr = mergeDeepRight(emptyNoSsr, baseNoSsr); 
+  const StyleGuideProvider: WrapFC = noSsr.active
+    ? ({ children }) => (
+      <NoSSR
+        loading={noSsr.loading}
+        defer={noSsr.defer}
+      >
+        <BaseProvider>
+          { children }
+        </BaseProvider>
+      </NoSSR>
+    ) : BaseProvider;
+  return StyleGuideProvider;
+}
+
 const createStyleGuide = <T extends KnownInitGuide>(config: InitGuide<T>) => {
   const initGuide: BaseGuide<T> = getInitConfig(config);
 
-  const { StyleGuideProvider, useStyleGuideState, useStyleGuideUpdater } = newContext({
+  const {
+    StyleGuideProvider: BaseProvider,
+    useStyleGuideState,
+    useStyleGuideUpdater
+  } = newContext({
     name: 'StyleGuide',
     initState: initGuide,
     reducer,
   } as const);
+
+  const StyleGuideProvider: WrapFC = getProvider(config, BaseProvider);
 
   const useStyleGuide = (refreshLevel: 0 | 1 = 0) => {
     const base = useStyleGuideState();
@@ -318,4 +347,14 @@ const createStyleGuide = <T extends KnownInitGuide>(config: InitGuide<T>) => {
   };
 };
 
-export { createStyleGuide as default };
+export {
+  // main
+  NoSSR,
+  createStyleGuide as default,
+  // types
+  CSS_Rule,
+  CSS_Rules,
+  KnownInitGuide,
+  KnownTheme,
+  BrakePoints,
+};
