@@ -42,7 +42,9 @@ const {
 } = R;
 
 const IS_SSR = typeof document === 'undefined';
-if (IS_SSR) { React.useLayoutEffect = React.useEffect; }
+if (IS_SSR) {
+  React.useLayoutEffect = React.useEffect;
+}
 const useIsomorphicLayoutEffect = React.useLayoutEffect;
 
 enum PRINT_TYPE {
@@ -109,9 +111,7 @@ const verifyScheme = (
 };
 
 // SUPPORT FNS
-const getLayout = () => IS_SSR
-  ? { width: 0, height: 0 }
-  : { width: window.innerWidth, height: window.innerHeight };
+const getLayout = () => (IS_SSR ? { width: 0, height: 0 } : { width: window.innerWidth, height: window.innerHeight });
 
 // export useRefreshLayot posible include in next versions.
 // const useRefreshLayot = () => {
@@ -271,20 +271,16 @@ const reducer: Reducer = (data, [action, payload]) => {
 const getProvider = (config: KnownInitGuide, BaseProvider: WrapFC) => {
   const emptyNoSsr = { active: false, loading: null, defer: false };
   const baseNoSsr = config.noSsr || {};
-  const noSsr = mergeDeepRight(emptyNoSsr, baseNoSsr); 
+  const noSsr = mergeDeepRight(emptyNoSsr, baseNoSsr);
   const StyleGuideProvider: WrapFC = noSsr.active
     ? ({ children }) => (
-      <NoSSR
-        loading={noSsr.loading}
-        defer={noSsr.defer}
-      >
-        <BaseProvider>
-          { children }
-        </BaseProvider>
-      </NoSSR>
-    ) : BaseProvider;
+        <NoSSR loading={noSsr.loading} defer={noSsr.defer}>
+          <BaseProvider>{children}</BaseProvider>
+        </NoSSR>
+      )
+    : BaseProvider;
   return StyleGuideProvider;
-}
+};
 
 const createStyleGuide = <T extends KnownInitGuide>(config: InitGuide<T>) => {
   const initGuide: BaseGuide<T> = getInitConfig(config);
@@ -292,7 +288,7 @@ const createStyleGuide = <T extends KnownInitGuide>(config: InitGuide<T>) => {
   const {
     StyleGuideProvider: BaseProvider,
     useStyleGuideState,
-    useStyleGuideUpdater
+    useStyleGuideUpdater,
   } = newContext({
     name: 'StyleGuide',
     initState: initGuide,
