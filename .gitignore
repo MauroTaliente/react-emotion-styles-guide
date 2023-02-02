@@ -2,4 +2,5 @@ node_modules
 .parcel-cache
 .idea
 dist
+dev
 yarn-error.log
