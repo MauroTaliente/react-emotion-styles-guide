@@ -6,7 +6,7 @@ import facepaint from 'facepaint';
 import { css } from '@emotion/react';
 // local utils
 import newContext from './helpers/context';
-import NoSSR from './helpers/NoSSR';
+import { ForceIRR, ForceCSR } from './helpers/componets';
 
 import {
   InitGuide,
@@ -19,6 +19,7 @@ import {
   KnownTheme,
   BrakePoints,
   WrapFC,
+  ProcessStyles,
 } from './model';
 
 const {
@@ -209,11 +210,17 @@ export const getInitConfig = <T extends KnownInitGuide>(init: InitGuide<T>) => {
     const build = facepaint(format);
     return css(build(rule));
   };
-  const siCss = (rule: CSS_Rule) => rule;
-  const styleSheets = (rules: CSS_Rules, procces = siCss) => {
+  const siCss = (rule: CSS_Rule) => {
+    return rule;
+  };
+  const styleSheets = (rules: CSS_Rules, mode: ProcessStyles) => {
+    const process = (() => {
+      if (mode === 'media') return mqCss;
+      return siCss;
+    })();
     return reduce((pre: object, key: string) => {
-      return mergeDeepRight(pre, { [key]: procces(rules[key] as CSS_Rule) });
-    }, {})(keys(rules));
+      return mergeDeepRight(pre, { [key]: process(rules[key] as CSS_Rule) });
+    }, {})(keys(rules) as string[]);
   };
 
   // ROOT
@@ -269,14 +276,14 @@ const reducer: Reducer = (data, [action, payload]) => {
 };
 
 const getProvider = (config: KnownInitGuide, BaseProvider: WrapFC) => {
-  const emptyNoSsr = { active: false, loading: null, defer: false };
-  const baseNoSsr = config.noSsr || {};
-  const noSsr = mergeDeepRight(emptyNoSsr, baseNoSsr);
-  const StyleGuideProvider: WrapFC = noSsr.active
+  const emptyIrr = { active: false, loading: null, defer: false };
+  const baseIrr = config.forceIrr || {};
+  const forceIrr = mergeDeepRight(emptyIrr, baseIrr);
+  const StyleGuideProvider: WrapFC = forceIrr.active
     ? ({ children }) => (
-        <NoSSR loading={noSsr.loading} defer={noSsr.defer}>
+        <ForceIRR loading={forceIrr.loading} defer={forceIrr.defer}>
           <BaseProvider>{children}</BaseProvider>
-        </NoSSR>
+        </ForceIRR>
       )
     : BaseProvider;
   return StyleGuideProvider;
@@ -345,7 +352,8 @@ const createStyleGuide = <T extends KnownInitGuide>(config: InitGuide<T>) => {
 
 export {
   // main
-  NoSSR,
+  ForceIRR,
+  ForceCSR,
   createStyleGuide as default,
   // types
   CSS_Rule,
