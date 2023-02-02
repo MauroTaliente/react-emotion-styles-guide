@@ -18,7 +18,7 @@
     "test": "jest --config jestconfig.json",
     "dev": "parcel dev/index.html",
     "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run prettier && npm run lint"
+    "cheks": "npm test && npm run prettier && npm run lint"
   },
   "files": [
     "dist",
