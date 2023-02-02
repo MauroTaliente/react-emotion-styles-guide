@@ -8,6 +8,7 @@ import createStyleGuide from '../src';
 describe('Common render', () => {
   it('renders without crashing', () => {
     const { StyleGuideProvider } = createStyleGuide({
+      forceIrr: { active: true },
       breakPoints: { sm: 320 },
       initThemeName: 'themeMila',
       root: {
@@ -51,6 +52,37 @@ describe('Common render', () => {
           fontFamily: {
             display: 'Playfair Display',
             body: 'IBM Plex Sans',
+          },
+        },
+      ],
+    } as const);
+
+    render(
+      <StyleGuideProvider>
+        <React.Fragment />
+      </StyleGuideProvider>,
+    );
+  });
+  it('renders without scheme', () => {
+    const { StyleGuideProvider } = createStyleGuide({
+      forceIrr: { active: false },
+      breakPoints: { sm: 320 },
+      initThemeName: 'themeMila',
+      root: {
+        colors: { color: '#eaeaea' },
+        fontFamily: { display: 'Font Family' },
+      },
+      themes: [
+        {
+          name: 'themeMila',
+          tags: ['dark'],
+          colors: {
+            acent: '#9e8de5',
+            primary: '#0f0f11',
+          },
+          fontFamily: {
+            display: 'Unbounded',
+            body: 'Raleway',
           },
         },
       ],
