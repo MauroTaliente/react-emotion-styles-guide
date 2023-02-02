@@ -6,13 +6,13 @@ if (IS_SSR) {
 }
 const useIsomorphicLayoutEffect = React.useLayoutEffect;
 
-interface NoSSRProps {
+interface WrapProps {
   children: ReactNode;
   defer?: boolean;
   loading?: ReactNode;
 }
 
-const NoSSR: FC<NoSSRProps> = ({ children, defer = false, loading = null }) => {
+const ForceCSR: FC<WrapProps> = ({ children, defer = false, loading = null }) => {
   const [isMounted, setMountedState] = useState(false);
   useIsomorphicLayoutEffect(() => {
     if (!defer) setMountedState(true);
@@ -20,4 +20,12 @@ const NoSSR: FC<NoSSRProps> = ({ children, defer = false, loading = null }) => {
   return <>{isMounted ? children : loading} </>;
 };
 
-export default NoSSR;
+const ForceIRR: FC<WrapProps> = ({ children, defer = false }) => {
+  const [isMounted, setMountedState] = useState(false);
+  useIsomorphicLayoutEffect(() => {
+    if (!defer) setMountedState(true);
+  }, [defer]);
+  return <>{isMounted ? children : children} </>;
+};
+
+export { ForceCSR, ForceIRR };

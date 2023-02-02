@@ -6,7 +6,7 @@ import facepaint from 'facepaint';
 import { css } from '@emotion/react';
 // local utils
 import newContext from './helpers/context';
-import NoSSR from './helpers/NoSSR';
+import { ForceIRR, ForceCSR } from './helpers/componets';
 
 import {
   InitGuide,
@@ -19,7 +19,6 @@ import {
   KnownTheme,
   BrakePoints,
   WrapFC,
-  StyleSheets,
   ProcessStyles,
 } from './model';
 
@@ -277,14 +276,14 @@ const reducer: Reducer = (data, [action, payload]) => {
 };
 
 const getProvider = (config: KnownInitGuide, BaseProvider: WrapFC) => {
-  const emptyNoSsr = { active: false, loading: null, defer: false };
-  const baseNoSsr = config.noSsr || {};
-  const noSsr = mergeDeepRight(emptyNoSsr, baseNoSsr);
-  const StyleGuideProvider: WrapFC = noSsr.active
+  const emptyIrr = { active: false, loading: null, defer: false };
+  const baseIrr = config.forceIrr || {};
+  const forceIrr = mergeDeepRight(emptyIrr, baseIrr);
+  const StyleGuideProvider: WrapFC = forceIrr.active
     ? ({ children }) => (
-        <NoSSR loading={noSsr.loading} defer={noSsr.defer}>
+        <ForceIRR loading={forceIrr.loading} defer={forceIrr.defer}>
           <BaseProvider>{children}</BaseProvider>
-        </NoSSR>
+        </ForceIRR>
       )
     : BaseProvider;
   return StyleGuideProvider;
@@ -353,7 +352,8 @@ const createStyleGuide = <T extends KnownInitGuide>(config: InitGuide<T>) => {
 
 export {
   // main
-  NoSSR,
+  ForceIRR,
+  ForceCSR,
   createStyleGuide as default,
   // types
   CSS_Rule,

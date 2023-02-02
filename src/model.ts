@@ -70,7 +70,7 @@ export type KnownInitGuide = {
     fontFamily?: readonly string[];
   };
   themes: readonly KnownTheme[];
-  noSsr?: {
+  forceIrr?: {
     active: boolean;
     defer?: boolean;
     loading?: ReactNode;
