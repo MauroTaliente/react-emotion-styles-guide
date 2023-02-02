@@ -19,7 +19,6 @@ import {
   KnownTheme,
   BrakePoints,
   WrapFC,
-  StyleSheets,
   ProcessStyles,
 } from './model';
 
