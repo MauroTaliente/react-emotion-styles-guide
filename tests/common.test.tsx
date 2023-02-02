@@ -8,6 +8,7 @@ import createStyleGuide from '../src';
 describe('Common render', () => {
   it('renders without crashing', () => {
     const { StyleGuideProvider } = createStyleGuide({
+      noSsr: { active: true },
       breakPoints: { sm: 320 },
       initThemeName: 'themeMila',
       root: {
@@ -15,7 +16,7 @@ describe('Common render', () => {
         fontFamily: { display: 'Font Family' },
       },
       scheme: {
-        name: ['themeMila', 'themePancho'],
+        // name: ['themeMila', 'themePancho'],
         tags: ['dark', 'light', 'rounded'],
         colors: ['acent', 'primary', 'secondary', 'ngAcent', 'bgPrimary', 'bgSecondary'],
         fontFamily: ['display', 'body'],

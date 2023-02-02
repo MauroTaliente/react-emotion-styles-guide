@@ -19,6 +19,8 @@ import {
   KnownTheme,
   BrakePoints,
   WrapFC,
+  StyleSheets,
+  ProcessStyles,
 } from './model';
 
 const {
@@ -209,11 +211,17 @@ export const getInitConfig = <T extends KnownInitGuide>(init: InitGuide<T>) => {
     const build = facepaint(format);
     return css(build(rule));
   };
-  const siCss = (rule: CSS_Rule) => rule;
-  const styleSheets = (rules: CSS_Rules, procces = siCss) => {
+  const siCss = (rule: CSS_Rule) => {
+    return rule;
+  };
+  const styleSheets = (rules: CSS_Rules, mode: ProcessStyles) => {
+    const process = (() => {
+      if (mode === 'media') return mqCss;
+      return siCss;
+    })();
     return reduce((pre: object, key: string) => {
-      return mergeDeepRight(pre, { [key]: procces(rules[key] as CSS_Rule) });
-    }, {})(keys(rules));
+      return mergeDeepRight(pre, { [key]: process(rules[key] as CSS_Rule) });
+    }, {})(keys(rules) as string[]);
   };
 
   // ROOT

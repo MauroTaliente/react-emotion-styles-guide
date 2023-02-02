@@ -20,23 +20,33 @@ export const emptyConfig = {
 };
 
 // types
+export enum Actions {
+  'THEME',
+  'GUIDE',
+}
+
+export type Reducer = (p1: any, p2: [Actions, any]) => any;
+
+export type Flags<T> = { [Property in keyof T]: boolean };
 export type WrapFC = FC<{ children: ReactElement }>;
 export type Entries<T> = { [K in keyof T]: [K, T[K]] }[keyof T][];
 export type CSS_Rule = { [K in keyof CSS.Properties]: CSS.Properties[K] | CSS.Properties[K][] };
-export type CSS_Rule_Facepaint = CSS_Rule[];
+export type CSS_Rule_Media = CSS_Rule[];
 export type CSS_Rules = Record<string, CSS_Rule>;
-export type CSS_Rules_Facepaint = Record<string, CSS_Rule_Facepaint>;
-export type Flags<T> = {
-  [Property in keyof T]: boolean;
-};
+export type CSS_Rules_Media = Record<string, CSS_Rule_Media>;
 export type Colors = Record<string, string>;
 export type Fonts = Record<string, string>;
 export type BrakePoints = Record<string, number>;
 
-type FacepaintCss = (r: CSS_Rule) => facepaint.DynamicStyle;
-// type EmotionCss = typeof css;
+export type SimpleProcessCss = (r: CSS_Rule) => CSS_Rule;
+export type MediaProcessCss = (r: CSS_Rule) => facepaint.DynamicStyle;
 
-type StyleSheets = <S extends Record<string, CSS_Rule>, P>(r: S, p?: P) => S;
+export type ProcessStyles = 'simple' | 'media';
+
+export type CSS_Media<T> = Record<keyof T, T[keyof T][]>;
+
+export type StyleSheets = <P extends ProcessStyles, R extends CSS_Rules>(rules: R, processStyles?: P) => R;
+// ) => P extends 'media' ? CSS_Media<R> : R; Funciona como un or a la hora de inferir y es confuso por ahora no se peude usar.
 
 export type KnownTheme = {
   name: string;
@@ -74,10 +84,10 @@ export type KnownBaseGuide = {
   root: KnownRoot;
   theme: KnownTheme;
   themes: readonly KnownTheme[];
-  atoms: CSS_Rules;
+  atoms: CSS_Rules | CSS_Rules_Media;
   helpers: {
     mq: Record<number, string>;
-    mqCss: FacepaintCss;
+    mqCss: MediaProcessCss;
     styleSheets: StyleSheets;
     setTheme: (n: string) => void;
   };
@@ -104,10 +114,3 @@ export type BaseGuide<T> = T extends KnownInitGuide
       };
     }
   : KnownBaseGuide;
-
-export enum Actions {
-  'THEME',
-  'GUIDE',
-}
-
-export type Reducer = (p1: any, p2: [Actions, any]) => any;
