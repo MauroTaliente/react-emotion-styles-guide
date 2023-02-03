@@ -169,7 +169,9 @@ const useMediaFlags = (bp: BrakePoints, enable: boolean) => {
 
 const createMediaQueries = (brakePoints: BrakePoints) => {
   return reduce((pre: object, key: string) => {
-    return mergeDeepRight(pre, { [key]: `@media (min-width: ${brakePoints[key]}px)` });
+    return mergeDeepRight(pre, {
+      [key]: `@media (min-width: ${brakePoints[key]}px)`,
+    });
   }, {})(keys(brakePoints));
 };
 
@@ -179,10 +181,18 @@ export const getInitConfig = <T extends KnownInitGuide>(init: InitGuide<T>) => {
   const empty = {
     breakPoints: {},
     initThemeName: '',
-    root: { colors: {}, fontFamily: {} },
+    root: {
+      colors: {},
+      fontFamily: {},
+    },
     themes: [],
     scheme: {},
-    theme: { name: '', tags: [], colors: {}, fontFamily: {} },
+    theme: {
+      name: '',
+      tags: [],
+      colors: {},
+      fontFamily: {},
+    },
   };
 
   // SCHEME
@@ -275,13 +285,10 @@ const reducer: Reducer = (data, [action, payload]) => {
   return data;
 };
 
-const getProvider = (config: KnownInitGuide, BaseProvider: WrapFC) => {
-  const emptyIrr = { active: false, loading: null, defer: false };
-  const baseIrr = config.forceIrr || {};
-  const forceIrr = mergeDeepRight(emptyIrr, baseIrr);
-  const StyleGuideProvider: WrapFC = forceIrr.active
+const getProvider = (forceIrr = false, BaseProvider: WrapFC) => {
+  const StyleGuideProvider: WrapFC = forceIrr
     ? ({ children }) => (
-        <ForceIRR loading={forceIrr.loading} defer={forceIrr.defer}>
+        <ForceIRR>
           <BaseProvider>{children}</BaseProvider>
         </ForceIRR>
       )
@@ -302,7 +309,7 @@ const createStyleGuide = <T extends KnownInitGuide>(config: InitGuide<T>) => {
     reducer,
   } as const);
 
-  const StyleGuideProvider: WrapFC = getProvider(config, BaseProvider);
+  const StyleGuideProvider: WrapFC = getProvider(config.forceIrr, BaseProvider);
 
   const useStyleGuide = (refreshLevel: 0 | 1 = 0) => {
     const base = useStyleGuideState();
@@ -355,6 +362,8 @@ export {
   ForceIRR,
   ForceCSR,
   createStyleGuide as default,
+};
+export type {
   // types
   CSS_Rule,
   CSS_Rules,

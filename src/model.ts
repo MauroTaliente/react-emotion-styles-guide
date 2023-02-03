@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/indent */
 import type * as CSS from 'csstype';
 import facepaint from 'facepaint';
-import { FC, ReactElement, ReactNode } from 'react';
+import { FC, ReactElement } from 'react';
 
-// DEFAULT SETTINGS
+// DEFAULT SETTINGS //
 export const emptyTheme = {
   name: '',
   tags: [],
@@ -70,11 +69,7 @@ export type KnownInitGuide = {
     fontFamily?: readonly string[];
   };
   themes: readonly KnownTheme[];
-  forceIrr?: {
-    active: boolean;
-    defer?: boolean;
-    loading?: ReactNode;
-  };
+  forceIrr?: boolean;
 };
 
 export type InitGuide<T> = T extends KnownInitGuide ? T : KnownInitGuide;

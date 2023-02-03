@@ -8,7 +8,7 @@ import createStyleGuide from '../src';
 describe('Common render', () => {
   it('renders without crashing', () => {
     const { StyleGuideProvider } = createStyleGuide({
-      forceIrr: { active: true },
+      forceIrr: true,
       breakPoints: { sm: 320 },
       initThemeName: 'themeMila',
       root: {
@@ -65,7 +65,7 @@ describe('Common render', () => {
   });
   it('renders without scheme', () => {
     const { StyleGuideProvider } = createStyleGuide({
-      forceIrr: { active: false },
+      forceIrr: false,
       breakPoints: { sm: 320 },
       initThemeName: 'themeMila',
       root: {
