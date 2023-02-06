@@ -114,7 +114,7 @@ const verifyScheme = (
 // SUPPORT FNS
 const getLayout = () => (IS_SSR ? { width: 0, height: 0 } : { width: window.innerWidth, height: window.innerHeight });
 
-// export useRefreshLayot posible include in next versions.
+// useRefreshLayot posible include in next versions.
 // const useRefreshLayot = () => {
 //   const [layout, setLayout] = useState(getLayout());
 //   const updateLayout = () => setLayout(getLayout());
@@ -176,7 +176,7 @@ const createMediaQueries = (brakePoints: BrakePoints) => {
 };
 
 // INI CONFIG
-export const getInitConfig = <T extends KnownInitGuide>(init: InitGuide<T>) => {
+const getInitConfig = <T extends KnownInitGuide>(init: InitGuide<T>) => {
   // EMPTY INIT
   const empty = {
     breakPoints: {},
@@ -296,7 +296,7 @@ const getProvider = (forceIrr = false, BaseProvider: WrapFC) => {
   return StyleGuideProvider;
 };
 
-const createStyleGuide = <T extends KnownInitGuide>(config: InitGuide<T>) => {
+function createStyleGuide<T extends KnownInitGuide>(config: InitGuide<T>) {
   const initGuide: BaseGuide<T> = getInitConfig(config);
 
   const {
@@ -355,7 +355,7 @@ const createStyleGuide = <T extends KnownInitGuide>(config: InitGuide<T>) => {
     StyleGuideProvider,
     useStyleGuide,
   };
-};
+}
 
 export {
   // main
