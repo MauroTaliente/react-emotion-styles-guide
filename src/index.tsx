@@ -359,9 +359,10 @@ function createStyleGuide<T extends KnownInitGuide>(config: InitGuide<T>) {
 
 export {
   // main
+  createStyleGuide,
+  createStyleGuide as default,
   ForceIRR,
   ForceCSR,
-  createStyleGuide as default,
 };
 export type {
   // types
