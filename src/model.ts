@@ -29,7 +29,10 @@ export type Reducer = (p1: any, p2: [Actions, any]) => any;
 export type Flags<T> = { [Property in keyof T]: boolean };
 export type WrapFC = FC<{ children: ReactElement }>;
 export type Entries<T> = { [K in keyof T]: [K, T[K]] }[keyof T][];
-export type CSS_Rule = { [K in keyof CSS.Properties]: CSS.Properties[K] | CSS.Properties[K][] };
+export type CSS_Properties = {
+  [K in keyof CSS.Properties]: CSS.Properties[K] | CSS.Properties[K][];
+};
+export type CSS_Rule = CSS_Properties | CSS_Properties[];
 export type CSS_Rule_Media = CSS_Rule[];
 export type CSS_Rules = Record<string, CSS_Rule>;
 export type CSS_Rules_Media = Record<string, CSS_Rule_Media>;
@@ -38,13 +41,17 @@ export type Fonts = Record<string, string>;
 export type BrakePoints = Record<string, number>;
 
 export type SimpleProcessCss = (r: CSS_Rule) => CSS_Rule;
-export type MediaProcessCss = (r: CSS_Rule) => facepaint.DynamicStyle;
+export type MediaProcessCss = (r: CSS_Rule, o?: facepaint.Options) => facepaint.DynamicStyle;
 
-export type ProcessStyles = 'simple' | 'media';
+export type ProcessStyles = 'simple' | 'facepaint';
 
 export type CSS_Media<T> = Record<keyof T, T[keyof T][]>;
 
-export type StyleSheets = <P extends ProcessStyles, R extends CSS_Rules>(rules: R, processStyles?: P) => R;
+export type StyleSheets = <P extends ProcessStyles, R extends CSS_Rules>(
+  rules: R,
+  processStyles?: P,
+  options?: facepaint.Options,
+) => R;
 // ) => P extends 'media' ? CSS_Media<R> : R; Funciona como un or a la hora de inferir y es confuso por ahora no se peude usar.
 
 export type KnownTheme = {
@@ -61,6 +68,9 @@ export type KnownRoot = {
 
 export type KnownInitGuide = {
   breakPoints: BrakePoints;
+  styles?: {
+    mode?: ProcessStyles;
+  } & facepaint.Options;
   initThemeName: string;
   root: KnownRoot;
   scheme?: {
@@ -82,7 +92,7 @@ export type KnownBaseGuide = {
   atoms: CSS_Rules | CSS_Rules_Media;
   helpers: {
     mq: Record<number, string>;
-    mqCss: MediaProcessCss;
+    facepaintCss: MediaProcessCss;
     styleSheets: StyleSheets;
     setTheme: (n: string) => void;
   };
@@ -96,6 +106,7 @@ export type KnownBaseGuide = {
 export type BaseGuide<T> = T extends KnownInitGuide
   ? KnownBaseGuide & {
       breakPoints: T['breakPoints'];
+      styles: T['styles'];
       root: T['root'];
       theme: T['themes'][number];
       themes: T['themes'];

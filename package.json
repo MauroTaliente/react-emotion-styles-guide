@@ -1,6 +1,6 @@
 {
   "name": "react-emotion-styles-guide",
-  "version": "0.4.6",
+  "version": "0.5.0",
   "description": "",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -16,7 +16,6 @@
     "lint": "eslint \"{**/*,*}.{js,ts,jsx,tsx}\"",
     "prettier": "prettier --write \"{src,tests,dev,example/src}/**/*.{js,ts,jsx,tsx}\"",
     "test": "jest --config jestconfig.json",
-    "prepare": "npm run build",
     "cheks": "npm test && npm run prettier && npm run lint"
   },
   "files": [

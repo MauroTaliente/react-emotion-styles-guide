@@ -19,7 +19,6 @@ import {
   KnownTheme,
   BrakePoints,
   WrapFC,
-  ProcessStyles,
 } from './model';
 
 const {
@@ -39,7 +38,9 @@ const {
   find,
   findIndex,
   last,
+  curry,
   or,
+  __,
 } = R;
 
 const IS_SSR = typeof document === 'undefined';
@@ -114,7 +115,7 @@ const verifyScheme = (
 // SUPPORT FNS
 const getLayout = () => (IS_SSR ? { width: 0, height: 0 } : { width: window.innerWidth, height: window.innerHeight });
 
-// useRefreshLayot posible include in next versions.
+// export useRefreshLayot posible include in next versions.
 // const useRefreshLayot = () => {
 //   const [layout, setLayout] = useState(getLayout());
 //   const updateLayout = () => setLayout(getLayout());
@@ -176,11 +177,16 @@ const createMediaQueries = (brakePoints: BrakePoints) => {
 };
 
 // INI CONFIG
-const getInitConfig = <T extends KnownInitGuide>(init: InitGuide<T>) => {
+export const getInitConfig = <T extends KnownInitGuide>(init: InitGuide<T>) => {
   // EMPTY INIT
   const empty = {
     breakPoints: {},
     initThemeName: '',
+    styles: {
+      mode: 'simple',
+      overlap: true,
+      literal: false,
+    },
     root: {
       colors: {},
       fontFamily: {},
@@ -215,17 +221,21 @@ const getInitConfig = <T extends KnownInitGuide>(init: InitGuide<T>) => {
   // media quieris map
   const mq = createMediaQueries(breakPoints);
   // media quieris with facepaint and css function helper
-  const mqCss = (rule: CSS_Rule) => {
+  const { mode: sMode, ...sOpt } = mergeDeepRight(empty.styles, init.styles || {});
+  const facepaintCss = (rule: CSS_Rule, options: facepaint.Options = sOpt) => {
     const format = map((point: string) => point)(values(mq));
-    const build = facepaint(format);
+    const build = facepaint(format, options);
     return css(build(rule));
   };
   const siCss = (rule: CSS_Rule) => {
     return rule;
   };
-  const styleSheets = (rules: CSS_Rules, mode: ProcessStyles) => {
+  const styleSheets = (rules: CSS_Rules, mode = sMode, options = sOpt) => {
     const process = (() => {
-      if (mode === 'media') return mqCss;
+      if (mode === 'facepaint') {
+        const mqCssReady = curry(facepaintCss)(__, options);
+        return mqCssReady;
+      }
       return siCss;
     })();
     return reduce((pre: object, key: string) => {
@@ -234,7 +244,7 @@ const getInitConfig = <T extends KnownInitGuide>(init: InitGuide<T>) => {
   };
 
   // ROOT
-  const root = mergeDeepRight(init.root, empty.root);
+  const root = mergeDeepRight(empty.root, init.root);
   verifyScheme(root, Object, VERIFY.TY);
   verifyScheme(root, empty.root, VERIFY.KEYS_IN_KEYS);
   verifyScheme(root.colors, String, VERIFY.VALUES_TY_IN_ARR);
@@ -269,7 +279,7 @@ const getInitConfig = <T extends KnownInitGuide>(init: InitGuide<T>) => {
     themes,
     helpers: {
       mq,
-      mqCss,
+      facepaintCss,
       styleSheets,
     },
   } as unknown as BaseGuide<T>;
@@ -296,7 +306,7 @@ const getProvider = (forceIrr = false, BaseProvider: WrapFC) => {
   return StyleGuideProvider;
 };
 
-function createStyleGuide<T extends KnownInitGuide>(config: InitGuide<T>) {
+const createStyleGuide = <T extends KnownInitGuide>(config: InitGuide<T>) => {
   const initGuide: BaseGuide<T> = getInitConfig(config);
 
   const {
@@ -355,14 +365,14 @@ function createStyleGuide<T extends KnownInitGuide>(config: InitGuide<T>) {
     StyleGuideProvider,
     useStyleGuide,
   };
-}
+};
 
 export {
   // main
-  createStyleGuide,
-  createStyleGuide as default,
   ForceIRR,
   ForceCSR,
+  createStyleGuide,
+  createStyleGuide as default,
 };
 export type {
   // types
