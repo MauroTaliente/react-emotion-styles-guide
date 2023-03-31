@@ -435,5 +435,11 @@ export type {
   CSS_Rules,
   KnownInitGuide,
   KnownTheme,
+  KnownExtended,
+  InitGuide,
+  BaseGuide,
+  InitExtend,
+  Extended,
+  FullGuide,
   BrakePoints,
 };
