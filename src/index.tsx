@@ -3,9 +3,10 @@ import React, { useMemo, useState } from 'react';
 import * as R from 'ramda';
 // styles
 import facepaint from 'facepaint';
-import { css } from '@emotion/react';
+
 // local utils
 import newContext from './helpers/context';
+import baseExtended from './helpers/extended';
 import { ForceIRR, ForceCSR } from './helpers/componets';
 
 import {
@@ -19,12 +20,22 @@ import {
   KnownTheme,
   BrakePoints,
   WrapFC,
+  InitProps,
+  KnownExtended,
+  InitExtend,
+  Extended,
+  FullGuide,
+  // PartialDeep,
+  // KnownBuildGuide,
+  // Join,
 } from './model';
 
 const {
+  // empty,
   toString,
   equals,
   map,
+  forEach,
   whereEq,
   keys,
   values,
@@ -177,28 +188,31 @@ const createMediaQueries = (brakePoints: BrakePoints) => {
 };
 
 // INI CONFIG
-export const getInitConfig = <T extends KnownInitGuide>(init: InitGuide<T>) => {
+export const getInitConfig = <T extends KnownInitGuide>(init: InitProps<T>) => {
   // EMPTY INIT
   const empty = {
     breakPoints: {},
-    initThemeName: '',
-    styles: {
-      mode: 'simple',
+    options: {
+      initTheme: '',
+      forceIrr: false,
       overlap: true,
       literal: false,
+      styleSheets: 'simple',
+      baseExtendedOn: false,
     },
-    root: {
+    root: {},
+    base: {
       colors: {},
       fontFamily: {},
     },
-    themes: [],
-    scheme: {},
     theme: {
       name: '',
       tags: [],
       colors: {},
       fontFamily: {},
     },
+    themes: [],
+    scheme: {},
   };
 
   // SCHEME
@@ -213,24 +227,29 @@ export const getInitConfig = <T extends KnownInitGuide>(init: InitGuide<T>) => {
   const scheme = mergeDeepRight(emptyScheme, baseScheme);
   verifyScheme(scheme, emptyScheme, VERIFY.KEYS_IN_KEYS);
 
+  // OPTIONS
+  const options = mergeDeepRight(empty.options, init.options || {});
   // BREAKEPOINTS
-  const breakPoints = init.breakPoints || empty.breakPoints;
+  const breakPoints = (init.breakPoints || empty.breakPoints) as BrakePoints;
   verifyScheme(breakPoints, Object, VERIFY.TY);
   verifyScheme(breakPoints, Number, VERIFY.VALUES_TY_IN_ARR);
   // DERIVED BREAKEPOINTS =>
+  const stMode = options.styleSheets;
+  const stOptions = { overlap: options.overlap, literal: options.literal };
   // media quieris map
   const mq = createMediaQueries(breakPoints);
   // media quieris with facepaint and css function helper
-  const { mode: sMode, ...sOpt } = mergeDeepRight(empty.styles, init.styles || {});
-  const facepaintCss = (rule: CSS_Rule, options: facepaint.Options = sOpt) => {
+  const facepaintCss = (rule: CSS_Rule, options: facepaint.Options = stOptions) => {
     const format = map((point: string) => point)(values(mq));
     const build = facepaint(format, options);
-    return css(build(rule));
+    return build(rule);
   };
+  // simlple css
   const siCss = (rule: CSS_Rule) => {
     return rule;
   };
-  const styleSheets = (rules: CSS_Rules, mode = sMode, options = sOpt) => {
+  // styles builder
+  const styleSheets = (rules: CSS_Rules, mode = stMode, options = stOptions) => {
     const process = (() => {
       if (mode === 'facepaint') {
         const mqCssReady = curry(facepaintCss)(__, options);
@@ -244,27 +263,36 @@ export const getInitConfig = <T extends KnownInitGuide>(init: InitGuide<T>) => {
   };
 
   // ROOT
-  const root = mergeDeepRight(empty.root, init.root);
-  verifyScheme(root, Object, VERIFY.TY);
-  verifyScheme(root, empty.root, VERIFY.KEYS_IN_KEYS);
-  verifyScheme(root.colors, String, VERIFY.VALUES_TY_IN_ARR);
-  verifyScheme(root.fontFamily, String, VERIFY.VALUES_TY_IN_ARR);
+  const root = mergeDeepRight(empty.root, init.root || {});
+  // BASE
+  const base = mergeDeepRight(empty.base, init.base || {});
+  verifyScheme(base, Object, VERIFY.TY);
+  verifyScheme(base, empty.base, VERIFY.KEYS_IN_KEYS, true);
+  verifyScheme(base.colors, String, VERIFY.VALUES_TY_IN_ARR, true);
+  verifyScheme(base.fontFamily, String, VERIFY.VALUES_TY_IN_ARR, true);
 
   // THEMES
-  const themes = init.themes || empty.themes;
-  map((x: any) => {
-    verifyScheme(x.name, scheme.name, VERIFY.KEY_IN_ARR, true);
-    verifyScheme(x.tags, scheme.tags, VERIFY.ARR_IN_ARR, true);
-    verifyScheme(x.colors, scheme.colors, VERIFY.KEYS_EQ_KEYS, true);
-    verifyScheme(x.fontFamily, scheme.fontFamily, VERIFY.KEYS_EQ_KEYS, true);
+  const initThemes = init.themes || empty.themes;
+  const themes = map((x: any) => {
+    // scheme verifications
+    forEach((rKey: keyof typeof scheme) => {
+      const v = (() => {
+        if (equals(rKey, 'name')) return VERIFY.KEY_IN_ARR;
+        if (equals(rKey, 'tags')) return VERIFY.ARR_IN_ARR;
+        return VERIFY.KEYS_EQ_KEYS;
+      })();
+      verifyScheme(x[rKey], scheme[rKey], v, true);
+    })(keys(scheme));
+    // others verifications
     verifyScheme(x.name, String, VERIFY.TY);
-    verifyScheme(x.tags, String, VERIFY.VALUES_TY_IN_ARR);
-    verifyScheme(x.colors, String, VERIFY.VALUES_TY_IN_ARR);
-    verifyScheme(x.fontFamily, String, VERIFY.VALUES_TY_IN_ARR);
-  })(themes);
+    verifyScheme(x.tags, String, VERIFY.VALUES_TY_IN_ARR, true);
+    verifyScheme(x.colors, String, VERIFY.VALUES_TY_IN_ARR, true);
+    verifyScheme(x.fontFamily, String, VERIFY.VALUES_TY_IN_ARR, true);
+    return mergeDeepRight(base, x);
+  })(initThemes);
   // DERIVED THEMES =>
   // init themeName
-  const initThemeName = init.initThemeName || init.themes[0].name || empty.initThemeName;
+  const initThemeName = init?.options?.initTheme || init?.themes?.[0].name || empty?.options?.initTheme;
   // list of themes
   const themesNames = map(({ name }: KnownTheme) => name)(themes);
   verifyScheme(initThemeName, themesNames, VERIFY.KEY_IN_ARR);
@@ -277,14 +305,31 @@ export const getInitConfig = <T extends KnownInitGuide>(init: InitGuide<T>) => {
     root,
     theme,
     themes,
+    options,
     helpers: {
       mq,
-      facepaintCss,
       styleSheets,
     },
-  } as unknown as BaseGuide<T>;
+  } as unknown as InitGuide<T>;
 };
 
+// EXTENDS
+const processExtends = <T extends KnownInitGuide, E extends KnownExtended>(
+  guide: BaseGuide<T>,
+  extended: InitExtend<E>,
+) => {
+  const ready = map((key: string) => {
+    return extended[key](guide);
+  })(keys(extended) as any) as Extended<E>;
+  return ready;
+};
+
+const getExtended = <E extends KnownExtended>(baseExtendedOn = false, customExtended = {} as InitExtend<E>) => {
+  if (baseExtendedOn) return mergeDeepRight(baseExtended, customExtended) as InitExtend<E>;
+  return customExtended as InitExtend<E>;
+};
+
+// REDUCER
 const reducer: Reducer = (data, [action, payload]) => {
   if (action === Actions.GUIDE) return payload;
   if (action === Actions.THEME)
@@ -295,6 +340,7 @@ const reducer: Reducer = (data, [action, payload]) => {
   return data;
 };
 
+// PROVIDER
 const getProvider = (forceIrr = false, BaseProvider: WrapFC) => {
   const StyleGuideProvider: WrapFC = forceIrr
     ? ({ children }) => (
@@ -306,9 +352,17 @@ const getProvider = (forceIrr = false, BaseProvider: WrapFC) => {
   return StyleGuideProvider;
 };
 
-const createStyleGuide = <T extends KnownInitGuide>(config: InitGuide<T>) => {
-  const initGuide: BaseGuide<T> = getInitConfig(config);
+// OPTIONS
+const getOptions = <T extends object>(baseOptions: T, newOptions: object) => {
+  return mergeDeepRight(baseOptions, newOptions || {});
+};
 
+// MAIN
+const createStyleGuide = <T extends KnownInitGuide, E extends KnownExtended>(
+  config: InitProps<T>,
+  customExtended = {} as InitExtend<E>,
+) => {
+  const initGuide: InitGuide<T> = getInitConfig(config);
   const {
     StyleGuideProvider: BaseProvider,
     useStyleGuideState,
@@ -319,51 +373,52 @@ const createStyleGuide = <T extends KnownInitGuide>(config: InitGuide<T>) => {
     reducer,
   } as const);
 
-  const StyleGuideProvider: WrapFC = getProvider(config.forceIrr, BaseProvider);
+  const StyleGuideProvider: WrapFC = getProvider(initGuide.options.forceIrr, BaseProvider);
+  const extended = getExtended(initGuide.options.baseExtendedOn, customExtended);
 
-  const useStyleGuide = (refreshLevel: 0 | 1 = 0) => {
-    const base = useStyleGuideState();
+  // USE STG
+  const useStyleGuide = (newOptions = {}) => {
+    const initGuide = useStyleGuideState();
     const set = useStyleGuideUpdater();
-    const mediaFlags = useMediaFlags(base.breakPoints, refreshLevel === 1);
+    type Options = BaseGuide<T>['options'];
+    const options: Options = getOptions(initGuide.options, newOptions);
+    const mediaFlags = useMediaFlags(initGuide.breakPoints, options.mediaQrr);
 
-    const dynamicHelpers = useMemo(() => {
-      type Name = BaseGuide<T>['themes'][number]['name'];
-      const setTheme = (themeName: Name) => {
+    // not use merge but take full control join.
+    const fullGuide = useMemo(() => {
+      type Theme = BaseGuide<T>['themes'][number];
+      // themes flags
+      const themeFlags = reduce((pre: object, { name }: Theme) => {
+        return mergeDeepRight(pre, { [name]: name === initGuide.theme.name });
+      }, {})(initGuide.themes);
+      // tags flags
+      const tagsFlags = reduce((pre: object, { tags }: Theme) => {
+        const inners = reduce((pre: object, tag: string) => {
+          return mergeDeepRight(pre, { [tag]: includes(tag)(initGuide.theme.tags || []) });
+        }, {})(tags || []);
+        return mergeDeepRight(pre, inners);
+      }, {})(initGuide.themes);
+      // set theme
+      const setTheme = (themeName: Theme['name']) => {
         set([Actions.THEME, themeName]);
       };
-      return { setTheme };
-    }, [set]);
+      // base
+      const base = mergeDeepRight(initGuide, {
+        state: { themeFlags, tagsFlags, mediaFlags },
+        helpers: { setTheme },
+      }) as unknown as BaseGuide<T>;
+      // extended
+      const full = { ...base, extended: processExtends(base, extended) };
+      return full;
+    }, [initGuide, mediaFlags, set]);
 
-    const themeState = useMemo(() => {
-      // themes flags
-      const themesFlags = reduce((pre: object, { name }: KnownTheme) => {
-        return mergeDeepRight(pre, { [name]: name === base.theme.name });
-      }, {})(base.themes);
-      // tags flags
-      const tagsFlags = reduce((pre: object, { tags }: KnownTheme) => {
-        const inners = reduce((pre: object, tag: string) => {
-          return mergeDeepRight(pre, { [tag]: includes(tag)(base.theme.tags) });
-        }, {})(tags);
-        return mergeDeepRight(pre, inners);
-      }, {})(base.themes);
-      return { themesFlags, tagsFlags };
-    }, [base]);
-
-    const fullGuide = useMemo(
-      () => ({
-        ...base,
-        state: { ...themeState, mediaFlags },
-        helpers: { ...base.helpers, ...dynamicHelpers },
-      }),
-      [base, themeState, dynamicHelpers, mediaFlags],
-    );
-
-    return fullGuide as BaseGuide<T>;
+    return fullGuide as FullGuide<T, E>;
   };
 
   return {
     StyleGuideProvider,
     useStyleGuide,
+    initGuide,
   };
 };
 

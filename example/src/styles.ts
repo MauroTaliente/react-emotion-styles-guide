@@ -1,52 +1,64 @@
-import createStyleGuide from 'react-emotion-styles-guide';
+import { BaseGuide } from '@module/esm/model';
+import { createStyleGuide } from '../module/esm';
 
-const { StyleGuideProvider, useStyleGuide } = createStyleGuide({
-  breakPoints: [360, 720],
-  initThemeName: 'themeMila',
-  root: {
-    colors: { color: '#eaeaea' },
-    fontFamily: { display: 'Font Family' },
+const config = {
+  breakPoints: { md: 640 },
+  options: {
+    initTheme: 'mauro',
   },
-  scheme: {
-    name: ['themeMila', 'themePancho'],
-    tags: ['dark', 'light', 'rounded'],
-    colors: ['acent', 'primary', 'secondary', 'ngAcent', 'bgPrimary', 'bgSecondary'],
-    fontFamily: ['display', 'body'],
+  base: {
+    spacing: {
+      sm: '1rem',
+      md: '2rem',
+    },
   },
   themes: [
     {
-      name: 'themeMila',
-      tags: ['dark', 'rounded'],
+      name: 'mauro',
+      tags: ['dark'],
       colors: {
-        acent: '#9e8de5',
-        primary: '#0f0f11',
-        secondary: '#393e43',
-        ngAcent: '#ffffff',
-        bgPrimary: '#ffffff',
-        bgSecondary: '#edf0fa',
+        acent: '#9D84B8',
+        primary: '#FFFFFD',
+        secondary: '#A8A7AC',
+        ngAcent: '#212025',
+        bgPrimary: '#212025',
+        bgSecondary: '#29282D',
       },
       fontFamily: {
         display: 'Unbounded',
         body: 'Raleway',
+        element: 'Raleway',
       },
-    },
+      spacing: {
+        sm: '1.5rem',
+      },
+    } as const,
     {
-      name: 'themePancho',
+      name: 'sabri',
       tags: ['light'],
       colors: {
-        acent: '#ff4e30',
-        primary: '#020202',
-        secondary: '#747474',
-        ngAcent: '#f0f0f0',
-        bgPrimary: '#f0f0f0',
-        bgSecondary: '#ffffff',
+        acent: '#9D84B8',
+        primary: '#FFFFFD',
+        secondary: '#A8A7AC',
+        ngAcent: '#212025',
+        bgPrimary: '#212025',
+        bgSecondary: '#29282D',
       },
       fontFamily: {
-        display: 'Playfair Display',
-        body: 'IBM Plex Sans',
+        display: 'Raleway',
+        body: 'Unbounded',
+        element: 'Unbounded',
       },
-    },
+    } as const,
   ],
-} as const);
+} as const;
 
-export { StyleGuideProvider, useStyleGuide };
+const extended = {
+  extra: (guide: BaseGuide<typeof config>) => ({
+    color: guide.theme.colors.acent,
+    other: 'pink',
+    maxWidth: `${guide.breakPoints.md}px`,
+  }),
+};
+
+export const { StyleGuideProvider, useStyleGuide } = createStyleGuide(config, extended);
