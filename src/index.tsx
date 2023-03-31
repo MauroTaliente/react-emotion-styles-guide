@@ -1,3 +1,4 @@
+// SI
 import React, { useMemo, useState } from 'react';
 // utils
 import * as R from 'ramda';
@@ -25,6 +26,8 @@ import {
   InitExtend,
   Extended,
   FullGuide,
+  StyleSheets,
+  ProcessStyles,
   // PartialDeep,
   // KnownBuildGuide,
   // Join,
@@ -228,26 +231,26 @@ export const getInitConfig = <T extends KnownInitGuide>(init: InitProps<T>) => {
   verifyScheme(scheme, emptyScheme, VERIFY.KEYS_IN_KEYS);
 
   // OPTIONS
-  const options = mergeDeepRight(empty.options, init.options || {});
+  const options = mergeDeepRight(empty.options, init.options || {}) as InitGuide<T>['options'];
   // BREAKEPOINTS
-  const breakPoints = (init.breakPoints || empty.breakPoints) as BrakePoints;
+  const breakPoints = (init.breakPoints || empty.breakPoints) as InitGuide<T>['breakPoints'];
   verifyScheme(breakPoints, Object, VERIFY.TY);
   verifyScheme(breakPoints, Number, VERIFY.VALUES_TY_IN_ARR);
   // DERIVED BREAKEPOINTS =>
-  const stMode = options.styleSheets;
-  const stOptions = { overlap: options.overlap, literal: options.literal };
+  const stMode = options.styleSheets as ProcessStyles;
+  const stOptions = { overlap: options.overlap, literal: options.literal } as facepaint.Options;
   // media quieris map
-  const mq = createMediaQueries(breakPoints);
+  const mq = createMediaQueries(breakPoints) as InitGuide<T>['helpers']['mq'];
   // media quieris with facepaint and css function helper
   const facepaintCss = (rule: CSS_Rule, options: facepaint.Options = stOptions) => {
-    const format = map((point: string) => point)(values(mq));
+    const format = map((point: string) => point)(values(mq) as string[]);
     const build = facepaint(format, options);
     return build(rule);
-  };
+  }; // => todo add type.
   // simlple css
   const siCss = (rule: CSS_Rule) => {
     return rule;
-  };
+  }; // => todo add type.
   // styles builder
   const styleSheets = (rules: CSS_Rules, mode = stMode, options = stOptions) => {
     const process = (() => {
@@ -257,11 +260,11 @@ export const getInitConfig = <T extends KnownInitGuide>(init: InitProps<T>) => {
       }
       return siCss;
     })();
-    return reduce((pre: object, key: string) => {
+    const result = reduce((pre: object, key: string) => {
       return mergeDeepRight(pre, { [key]: process(rules[key] as CSS_Rule) });
-    }, {})(keys(rules) as string[]);
-  };
-
+    }, {})(keys(rules) as string[]) as CSS_Rules;
+    return result as CSS_Rules;
+  }; // => todo add type.
   // ROOT
   const root = mergeDeepRight(empty.root, init.root || {});
   // BASE
@@ -289,7 +292,7 @@ export const getInitConfig = <T extends KnownInitGuide>(init: InitProps<T>) => {
     verifyScheme(x.colors, String, VERIFY.VALUES_TY_IN_ARR, true);
     verifyScheme(x.fontFamily, String, VERIFY.VALUES_TY_IN_ARR, true);
     return mergeDeepRight(base, x);
-  })(initThemes);
+  })(initThemes) as InitGuide<T>['themes'];
   // DERIVED THEMES =>
   // init themeName
   const initThemeName = init?.options?.initTheme || init?.themes?.[0].name || empty?.options?.initTheme;
@@ -298,7 +301,8 @@ export const getInitConfig = <T extends KnownInitGuide>(init: InitProps<T>) => {
   verifyScheme(initThemeName, themesNames, VERIFY.KEY_IN_ARR);
   verifyScheme(themesNames, scheme.name, VERIFY.EQ, true);
   // active theme
-  const theme = find(({ name }: KnownTheme) => name === initThemeName)(themes) || empty.theme;
+  const theme = (find(({ name }: KnownTheme) => name === initThemeName)(themes) ||
+    empty.theme) as InitGuide<T>['theme'];
 
   return {
     breakPoints,
@@ -310,7 +314,7 @@ export const getInitConfig = <T extends KnownInitGuide>(init: InitProps<T>) => {
       mq,
       styleSheets,
     },
-  } as unknown as InitGuide<T>;
+  } as InitGuide<T>;
 };
 
 // EXTENDS
@@ -442,4 +446,5 @@ export type {
   Extended,
   FullGuide,
   BrakePoints,
+  StyleSheets,
 };

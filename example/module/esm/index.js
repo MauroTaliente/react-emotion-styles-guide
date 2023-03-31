@@ -1,4 +1,5 @@
 import { __assign } from "tslib";
+// SI
 import React, { useMemo, useState } from 'react';
 // utils
 import * as R from 'ramda';
@@ -211,11 +212,11 @@ export var getInitConfig = function (init) {
         var format = map(function (point) { return point; })(values(mq));
         var build = facepaint(format, options);
         return build(rule);
-    };
+    }; // => todo add type.
     // simlple css
     var siCss = function (rule) {
         return rule;
-    };
+    }; // => todo add type.
     // styles builder
     var styleSheets = function (rules, mode, options) {
         if (mode === void 0) { mode = stMode; }
@@ -227,11 +228,12 @@ export var getInitConfig = function (init) {
             }
             return siCss;
         })();
-        return reduce(function (pre, key) {
+        var result = reduce(function (pre, key) {
             var _a;
             return mergeDeepRight(pre, (_a = {}, _a[key] = process(rules[key]), _a));
         }, {})(keys(rules));
-    };
+        return result;
+    }; // => todo add type.
     // ROOT
     var root = mergeDeepRight(empty.root, init.root || {});
     // BASE
@@ -272,10 +274,11 @@ export var getInitConfig = function (init) {
     verifyScheme(initThemeName, themesNames, VERIFY.KEY_IN_ARR);
     verifyScheme(themesNames, scheme.name, VERIFY.EQ, true);
     // active theme
-    var theme = find(function (_a) {
+    var theme = (find(function (_a) {
         var name = _a.name;
         return name === initThemeName;
-    })(themes) || empty.theme;
+    })(themes) ||
+        empty.theme);
     return {
         breakPoints: breakPoints,
         root: root,

@@ -1,5 +1,11 @@
-import { BaseGuide } from '@module/esm/model';
-import { createStyleGuide } from '../module/esm';
+import { InitGuide, BaseGuide } from '@module/esm/model';
+import { createStyleGuide, CSS_Rule } from '../module/esm';
+
+declare module 'react' {
+  interface Attributes {
+    css?: CSS_Rule;
+  }
+}
 
 const config = {
   breakPoints: { md: 640 },
@@ -60,5 +66,7 @@ const extended = {
     maxWidth: `${guide.breakPoints.md}px`,
   }),
 };
+
+type T = InitGuide<typeof config>['helpers']['styleSheets'];
 
 export const { StyleGuideProvider, useStyleGuide } = createStyleGuide(config, extended);

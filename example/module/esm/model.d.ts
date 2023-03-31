@@ -9,9 +9,6 @@ export declare enum Actions {
 export type Expand<T> = T extends (...args: infer A) => infer R ? (...args: Expand<A>) => Expand<R> : T extends infer O ? {
     [K in keyof O]: O[K];
 } : never;
-export type ExpandRecursively<T> = T extends (...args: infer A) => infer R ? (...args: ExpandRecursively<A>) => ExpandRecursively<R> : T extends object ? T extends infer O ? {
-    [K in keyof O]: ExpandRecursively<O[K]>;
-} : never : T;
 export type Join<T> = {
     [K in keyof T]: [K, T[K]];
 } & object;
@@ -45,7 +42,7 @@ export type ProcessStyles = 'simple' | 'facepaint';
 export type KnownOptions = {
     forceIrr?: boolean;
     mediaQrr?: boolean;
-    mode?: ProcessStyles;
+    styleSheets?: ProcessStyles;
     literal?: boolean;
     overlap?: boolean;
     initTheme?: string;
@@ -79,38 +76,41 @@ export type KnownInitGuide = {
 export type InitProps<T> = T extends KnownInitGuide ? T : never;
 type Themes<T extends KnownInitGuide> = RequiredDeep<T['themes']>;
 type Theme<T extends KnownInitGuide> = Merge<Themes<T>[number], NonNullable<T['base']>, 'deep'>;
-type StyleSheets = <P extends ProcessStyles, R extends CSS_Rules>(rules: R, processStyles?: P, options?: facepaint.Options) => R;
-export type InitGuide<T> = T extends KnownInitGuide ? ExpandRecursively<{
+export type StyleSheets = <R extends CSS_Rules>(rules: R, processStyles?: ProcessStyles, options?: facepaint.Options) => R;
+export type MediaQueries<M extends BrakePoints> = {
+    [K in keyof M]: `@media (min-width: ${M[K]}px)`;
+};
+export type InitGuide<T> = T extends KnownInitGuide ? {
     breakPoints: NonNullable<T['breakPoints']>;
     options: RequiredDeep<T['options']>;
     root: NonNullable<T['root']>;
     theme: Theme<T>;
     themes: Themes<T>;
     helpers: {
-        mq: Record<number, string>;
-        styleSheets: StyleSheets;
+        mq: Expand<MediaQueries<NonNullable<T['breakPoints']>>>;
+        styleSheets: Expand<StyleSheets>;
     };
-}> : never;
+} : never;
 type MediaFlags<T extends KnownInitGuide> = Record<keyof T['breakPoints'], boolean>;
 type ThemeFlags<T extends KnownInitGuide> = Record<Theme<T>['name'], boolean>;
 type TagsFlags<T extends KnownInitGuide> = Record<Theme<T>['tags'][number], boolean>;
-export type BaseGuide<T> = T extends KnownInitGuide ? InitGuide<T> & ExpandRecursively<{
+export type BaseGuide<T> = T extends KnownInitGuide ? InitGuide<T> & {
     helpers: {
-        setTheme: (n: Themes<T>) => void;
+        setTheme: (n: Theme<T>['name']) => void;
     };
     state: {
         mediaFlags: MediaFlags<T>;
         themeFlags: ThemeFlags<T>;
         tagsFlags: TagsFlags<T>;
     };
-}> : never;
+} : never;
 export type KnownExtended = Record<string, (g: any) => Record<string, any>>;
 export type InitExtend<T> = T extends KnownExtended ? T : never;
-export type FullGuide<T, E> = T extends KnownInitGuide ? E extends KnownExtended ? BaseGuide<T> & ExpandRecursively<{
+export type FullGuide<T, E> = T extends KnownInitGuide ? E extends KnownExtended ? BaseGuide<T> & {
     extended: {
         [K in keyof E]: ReturnType<E[K]>;
     };
-}> : never : never;
+} : never : never;
 export type Extended<E extends KnownExtended> = {
     [K in keyof E]: ReturnType<E[K]>;
 };
