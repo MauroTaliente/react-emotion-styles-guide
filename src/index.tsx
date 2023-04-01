@@ -323,7 +323,9 @@ const processExtends = <T extends KnownInitGuide, E extends KnownExtended>(
   extended: InitExtend<E>,
 ) => {
   const ready = map((key: string) => {
-    return extended[key](guide);
+    const rule = extended[key] as any;
+    if (is(Function, extended[key])) return rule(guide);
+    return rule;
   })(keys(extended) as any) as Extended<E>;
   return ready;
 };

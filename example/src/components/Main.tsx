@@ -7,6 +7,7 @@ const Main = () => {
   const {
     helpers,
     helpers: { styleSheets },
+    extended: { extra, common },
   } = useStyleGuide();
 
   const styles = styleSheets({

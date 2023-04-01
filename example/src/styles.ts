@@ -65,6 +65,9 @@ const extended = {
     other: 'pink',
     maxWidth: `${guide.breakPoints.md}px`,
   }),
+  common: {
+    padding: '12px',
+  },
 };
 
 type T = InitGuide<typeof config>['helpers']['styleSheets'];
