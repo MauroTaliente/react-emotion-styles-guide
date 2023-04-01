@@ -294,7 +294,10 @@ export var getInitConfig = function (init) {
 // EXTENDS
 var processExtends = function (guide, extended) {
     var ready = map(function (key) {
-        return extended[key](guide);
+        var rule = extended[key];
+        if (is(Function, extended[key]))
+            return rule(guide);
+        return rule;
     })(keys(extended));
     return ready;
 };

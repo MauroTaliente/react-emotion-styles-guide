@@ -104,16 +104,17 @@ export type BaseGuide<T> = T extends KnownInitGuide ? InitGuide<T> & {
         tagsFlags: TagsFlags<T>;
     };
 } : never;
-export type KnownExtended = Record<string, (g: any) => Record<string, any>>;
-export type InitExtend<T> = T extends KnownExtended ? T : never;
-export type FullGuide<T, E> = T extends KnownInitGuide ? E extends KnownExtended ? BaseGuide<T> & {
-    extended: {
-        [K in keyof E]: ReturnType<E[K]>;
-    };
-} : never : never;
-export type Extended<E extends KnownExtended> = {
-    [K in keyof E]: ReturnType<E[K]>;
+type PCSS_Rule = (g: any) => CSS_Rule;
+export type KnownExtended = {
+    [K: string]: CSS_Rule | PCSS_Rule;
 };
+export type InitExtend<T> = T extends KnownExtended ? T : never;
+export type Extended<E extends KnownExtended> = {
+    [K in keyof E]: E[K] extends PCSS_Rule ? ReturnType<E[K]> : E[K];
+};
+export type FullGuide<T, E> = T extends KnownInitGuide ? E extends KnownExtended ? BaseGuide<T> & {
+    extended: Extended<E>;
+} : never : never;
 export declare const emptyTheme: KnownTheme;
 export declare const emptyConfig: {
     breakPoints: {};

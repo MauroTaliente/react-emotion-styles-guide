@@ -162,20 +162,21 @@ export type BaseGuide<T> = T extends KnownInitGuide
   : never;
 
 // STEP 4 / extended types ->
-export type KnownExtended = Record<string, (g: any) => Record<string, any>>;
+type PCSS_Rule = (g: any) => CSS_Rule;
+export type KnownExtended = { [K: string]: CSS_Rule | PCSS_Rule };
 export type InitExtend<T> = T extends KnownExtended ? T : never;
+export type Extended<E extends KnownExtended> = {
+  [K in keyof E]: E[K] extends PCSS_Rule ? ReturnType<E[K]> : E[K];
+};
 
+// STEP 5 / compouse final ->
 export type FullGuide<T, E> = T extends KnownInitGuide
   ? E extends KnownExtended
     ? BaseGuide<T> & {
-        extended: { [K in keyof E]: ReturnType<E[K]> };
+        extended: Extended<E>;
       }
     : never
   : never;
-
-export type Extended<E extends KnownExtended> = {
-  [K in keyof E]: ReturnType<E[K]>;
-};
 
 // DEFAULT SETTINGS //
 export const emptyTheme = {
