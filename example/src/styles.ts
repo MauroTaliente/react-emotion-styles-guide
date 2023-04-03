@@ -1,5 +1,4 @@
-import { InitGuide, BaseGuide } from '@module/esm/model';
-import { createStyleGuide, CSS_Rule } from '../module/esm';
+import { InitGuide, BaseGuide, createStyleGuide, baseExtended, CSS_Rule } from '../module/esm';
 
 declare module 'react' {
   interface Attributes {
@@ -43,12 +42,12 @@ const config = {
       name: 'sabri',
       tags: ['light'],
       colors: {
-        acent: '#9D84B8',
-        primary: '#FFFFFD',
-        secondary: '#A8A7AC',
-        ngAcent: '#212025',
-        bgPrimary: '#212025',
-        bgSecondary: '#29282D',
+        acent: 'red',
+        primary: 'white',
+        secondary: 'blue',
+        ngAcent: 'black',
+        bgPrimary: 'pink',
+        bgSecondary: 'yellow',
       },
       fontFamily: {
         display: 'Raleway',
@@ -60,14 +59,16 @@ const config = {
 } as const;
 
 const extended = {
-  extra: (guide: BaseGuide<typeof config>) => ({
-    color: guide.theme.colors.acent,
+  ...baseExtended,
+  extra: ({ breakPoints, theme: { colors } }: BaseGuide<typeof config>) => ({
+    color: colors.acent,
     other: 'pink',
-    maxWidth: `${guide.breakPoints.md}px`,
+    maxWidth: `${breakPoints.md}px`,
   }),
   common: {
     padding: '12px',
   },
+  noCss: ({ theme: { colors } }: BaseGuide<typeof config>) => ({ ...colors }),
 };
 
 type T = InitGuide<typeof config>['helpers']['styleSheets'];

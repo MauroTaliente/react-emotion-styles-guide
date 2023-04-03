@@ -9,11 +9,7 @@ import facepaint from 'facepaint';
 import newContext from './helpers/context';
 import baseExtended from './helpers/extended';
 import { ForceIRR, ForceCSR } from './helpers/componets';
-import { Actions,
-// PartialDeep,
-// KnownBuildGuide,
-// Join,
- } from './model';
+import { Actions, } from './model';
 var 
 // empty,
 toString = R.toString, equals = R.equals, map = R.map, forEach = R.forEach, whereEq = R.whereEq, keys = R.keys, values = R.values, reduce = R.reduce, mergeDeepRight = R.mergeDeepRight, includes = R.includes, all = R.all, type = R.type, is = R.is, intersection = R.intersection, find = R.find, findIndex = R.findIndex, last = R.last, curry = R.curry, or = R.or, __ = R.__;
@@ -293,19 +289,23 @@ export var getInitConfig = function (init) {
 };
 // EXTENDS
 var processExtends = function (guide, extended) {
-    var ready = map(function (key) {
+    var ready = reduce(function (pre, key) {
+        var _a;
+        var result;
         var rule = extended[key];
-        if (is(Function, extended[key]))
-            return rule(guide);
-        return rule;
-    })(keys(extended));
+        if (is(Function, rule))
+            result = rule(guide);
+        result = rule;
+        return __assign(__assign({}, pre), (_a = {}, _a[key] = result, _a));
+    }, {})(keys(extended));
     return ready;
 };
-var getExtended = function (baseExtendedOn, customExtended) {
-    if (baseExtendedOn === void 0) { baseExtendedOn = false; }
+var getExtended = function (
+// baseExtendedOn = false, todo add support
+// baseExtended = {} as B, todo add support
+customExtended) {
     if (customExtended === void 0) { customExtended = {}; }
-    if (baseExtendedOn)
-        return mergeDeepRight(baseExtended, customExtended);
+    // if (baseExtendedOn) return mergeDeepRight(baseExtended, customExtended) as InitExtend<E>;
     return customExtended;
 };
 // REDUCER
@@ -346,7 +346,7 @@ var createStyleGuide = function (config, customExtended) {
         reducer: reducer
     }), BaseProvider = _a.StyleGuideProvider, useStyleGuideState = _a.useStyleGuideState, useStyleGuideUpdater = _a.useStyleGuideUpdater;
     var StyleGuideProvider = getProvider(initGuide.options.forceIrr, BaseProvider);
-    var extended = getExtended(initGuide.options.baseExtendedOn, customExtended);
+    var extended = getExtended(customExtended);
     // USE STG
     var useStyleGuide = function (newOptions) {
         if (newOptions === void 0) { newOptions = {}; }
@@ -377,8 +377,14 @@ var createStyleGuide = function (config, customExtended) {
             };
             // base
             var base = mergeDeepRight(initGuide, {
-                state: { themeFlags: themeFlags, tagsFlags: tagsFlags, mediaFlags: mediaFlags },
-                helpers: { setTheme: setTheme }
+                helpers: {
+                    setTheme: setTheme
+                },
+                state: {
+                    themeFlags: themeFlags,
+                    tagsFlags: tagsFlags,
+                    mediaFlags: mediaFlags
+                }
             });
             // extended
             var full = __assign(__assign({}, base), { extended: processExtends(base, extended) });
@@ -394,5 +400,5 @@ var createStyleGuide = function (config, customExtended) {
 };
 export { 
 // main
-ForceIRR, ForceCSR, createStyleGuide, createStyleGuide as default, };
+ForceIRR, ForceCSR, baseExtended, createStyleGuide, createStyleGuide as default, };
 //# sourceMappingURL=index.js.map

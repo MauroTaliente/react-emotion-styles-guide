@@ -8,20 +8,14 @@ export enum Actions {
   'THEME',
   'GUIDE',
 }
-export type Expand<T> = T extends (...args: infer A) => infer R
-  ? (...args: Expand<A>) => Expand<R>
-  : T extends infer O
-  ? { [K in keyof O]: O[K] }
-  : never;
 
-// BUG DETECTED todo serach replacement;
-// export type ExpandRecursively<T> = T extends (...args: infer A) => infer R
-//   ? (...args: ExpandRecursively<A>) => ExpandRecursively<R>
-//   : T extends object
-//   ? T extends infer O
-//     ? { [K in keyof O]: ExpandRecursively<O[K]> }
-//     : never
-//   : T;
+export type Expand<T> = T extends (...args: any) => any
+  ? T
+  : T extends object
+  ? T extends infer O
+    ? { [K in keyof O]: Expand<O[K]> }
+    : never
+  : T;
 
 export type Join<T> = { [K in keyof T]: [K, T[K]] } & object;
 
@@ -65,6 +59,8 @@ export type Entries<T> = { [K in keyof T]: [K, T[K]] }[keyof T][];
 export type CSS_Properties = {
   [K in keyof CSS.Properties]: CSS.Properties[K] | CSS.Properties[K][];
 };
+
+export type SIM_Object = Record<string, any>;
 export type CSS_Rule = CSS_Properties | CSS_Properties[];
 export type CSS_Rule_Media = CSS_Rule[];
 export type CSS_Rules = Record<string, CSS_Rule>;
@@ -83,7 +79,7 @@ export type KnownOptions = {
   literal?: boolean;
   overlap?: boolean;
   initTheme?: string;
-  baseExtendedOn?: boolean;
+  // baseExtendedOn?: boolean; todo add support
 };
 
 export type KnownProps = {
@@ -131,17 +127,17 @@ export type MediaQueries<M extends BrakePoints> = {
 };
 
 export type InitGuide<T> = T extends KnownInitGuide
-  ? {
+  ? Expand<{
       breakPoints: NonNullable<T['breakPoints']>;
       options: RequiredDeep<T['options']>;
       root: NonNullable<T['root']>;
       theme: Theme<T>;
       themes: Themes<T>;
       helpers: {
-        mq: Expand<MediaQueries<NonNullable<T['breakPoints']>>>;
-        styleSheets: Expand<StyleSheets>;
+        mq: MediaQueries<NonNullable<T['breakPoints']>>;
+        styleSheets: StyleSheets;
       };
-    }
+    }>
   : never;
 
 // STEP 3 | support types ->
@@ -149,21 +145,23 @@ type MediaFlags<T extends KnownInitGuide> = Record<keyof T['breakPoints'], boole
 type ThemeFlags<T extends KnownInitGuide> = Record<Theme<T>['name'], boolean>;
 type TagsFlags<T extends KnownInitGuide> = Record<Theme<T>['tags'][number], boolean>;
 export type BaseGuide<T> = T extends KnownInitGuide
-  ? InitGuide<T> & {
-      helpers: {
-        setTheme: (n: Theme<T>['name']) => void;
-      };
-      state: {
-        mediaFlags: MediaFlags<T>;
-        themeFlags: ThemeFlags<T>;
-        tagsFlags: TagsFlags<T>;
-      };
-    }
+  ? Expand<
+      InitGuide<T> & {
+        helpers: {
+          setTheme: (n: Theme<T>['name']) => void;
+        };
+        state: {
+          mediaFlags: MediaFlags<T>;
+          themeFlags: ThemeFlags<T>;
+          tagsFlags: TagsFlags<T>;
+        };
+      }
+    >
   : never;
 
 // STEP 4 / extended types ->
-type PCSS_Rule = (g: any) => CSS_Rule;
-export type KnownExtended = { [K: string]: CSS_Rule | PCSS_Rule };
+type PCSS_Rule = (g: any) => CSS_Rule | SIM_Object;
+export type KnownExtended = { [K: string]: CSS_Rule | PCSS_Rule | SIM_Object };
 export type InitExtend<T> = T extends KnownExtended ? T : never;
 export type Extended<E extends KnownExtended> = {
   [K in keyof E]: E[K] extends PCSS_Rule ? ReturnType<E[K]> : E[K];
@@ -172,9 +170,11 @@ export type Extended<E extends KnownExtended> = {
 // STEP 5 / compouse final ->
 export type FullGuide<T, E> = T extends KnownInitGuide
   ? E extends KnownExtended
-    ? BaseGuide<T> & {
-        extended: Extended<E>;
-      }
+    ? Expand<
+        BaseGuide<T> & {
+          extended: Extended<E>;
+        }
+      >
     : never
   : never;
 

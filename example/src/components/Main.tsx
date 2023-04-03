@@ -5,9 +5,11 @@ import { useStyleGuide } from '../styles';
 
 const Main = () => {
   const {
+    theme,
     helpers,
+    extended,
     helpers: { styleSheets },
-    extended: { extra, common },
+    extended: { common, noCss, aspectRatio },
   } = useStyleGuide();
 
   const styles = styleSheets({

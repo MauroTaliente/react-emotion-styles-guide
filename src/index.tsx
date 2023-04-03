@@ -28,9 +28,6 @@ import {
   FullGuide,
   StyleSheets,
   ProcessStyles,
-  // PartialDeep,
-  // KnownBuildGuide,
-  // Join,
 } from './model';
 
 const {
@@ -332,8 +329,12 @@ const processExtends = <T extends KnownInitGuide, E extends KnownExtended>(
   return ready;
 };
 
-const getExtended = <E extends KnownExtended>(baseExtendedOn = false, customExtended = {} as InitExtend<E>) => {
-  if (baseExtendedOn) return mergeDeepRight(baseExtended, customExtended) as InitExtend<E>;
+const getExtended = <E extends KnownExtended /*, B extends SIM_Object */>(
+  // baseExtendedOn = false, todo add support
+  // baseExtended = {} as B, todo add support
+  customExtended = {} as InitExtend<E>,
+) => {
+  // if (baseExtendedOn) return mergeDeepRight(baseExtended, customExtended) as InitExtend<E>;
   return customExtended as InitExtend<E>;
 };
 
@@ -370,7 +371,7 @@ const createStyleGuide = <T extends KnownInitGuide, E extends KnownExtended>(
   config: InitProps<T>,
   customExtended = {} as InitExtend<E>,
 ) => {
-  const initGuide: InitGuide<T> = getInitConfig(config);
+  const initGuide = getInitConfig(config) as InitGuide<T>;
   const {
     StyleGuideProvider: BaseProvider,
     useStyleGuideState,
@@ -382,7 +383,7 @@ const createStyleGuide = <T extends KnownInitGuide, E extends KnownExtended>(
   } as const);
 
   const StyleGuideProvider: WrapFC = getProvider(initGuide.options.forceIrr, BaseProvider);
-  const extended = getExtended(initGuide.options.baseExtendedOn, customExtended);
+  const extended = getExtended(customExtended);
 
   // USE STG
   const useStyleGuide = (newOptions = {}) => {
@@ -412,8 +413,14 @@ const createStyleGuide = <T extends KnownInitGuide, E extends KnownExtended>(
       };
       // base
       const base = mergeDeepRight(initGuide, {
-        state: { themeFlags, tagsFlags, mediaFlags },
-        helpers: { setTheme },
+        helpers: {
+          setTheme,
+        },
+        state: {
+          themeFlags,
+          tagsFlags,
+          mediaFlags,
+        },
       }) as unknown as BaseGuide<T>;
       // extended
       const full = { ...base, extended: processExtends(base, extended) };
@@ -434,6 +441,7 @@ export {
   // main
   ForceIRR,
   ForceCSR,
+  baseExtended,
   createStyleGuide,
   createStyleGuide as default,
 };

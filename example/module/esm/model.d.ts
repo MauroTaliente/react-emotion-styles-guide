@@ -6,9 +6,9 @@ export declare enum Actions {
     'THEME' = 0,
     'GUIDE' = 1
 }
-export type Expand<T> = T extends (...args: infer A) => infer R ? (...args: Expand<A>) => Expand<R> : T extends infer O ? {
-    [K in keyof O]: O[K];
-} : never;
+export type Expand<T> = T extends (...args: any) => any ? T : T extends object ? T extends infer O ? {
+    [K in keyof O]: Expand<O[K]>;
+} : never : T;
 export type Join<T> = {
     [K in keyof T]: [K, T[K]];
 } & object;
@@ -31,6 +31,7 @@ export type Entries<T> = {
 export type CSS_Properties = {
     [K in keyof CSS.Properties]: CSS.Properties[K] | CSS.Properties[K][];
 };
+export type SIM_Object = Record<string, any>;
 export type CSS_Rule = CSS_Properties | CSS_Properties[];
 export type CSS_Rule_Media = CSS_Rule[];
 export type CSS_Rules = Record<string, CSS_Rule>;
@@ -46,7 +47,6 @@ export type KnownOptions = {
     literal?: boolean;
     overlap?: boolean;
     initTheme?: string;
-    baseExtendedOn?: boolean;
 };
 export type KnownProps = {
     [K: string]: any;
@@ -80,21 +80,21 @@ export type StyleSheets = <R extends CSS_Rules>(rules: R, processStyles?: Proces
 export type MediaQueries<M extends BrakePoints> = {
     [K in keyof M]: `@media (min-width: ${M[K]}px)`;
 };
-export type InitGuide<T> = T extends KnownInitGuide ? {
+export type InitGuide<T> = T extends KnownInitGuide ? Expand<{
     breakPoints: NonNullable<T['breakPoints']>;
     options: RequiredDeep<T['options']>;
     root: NonNullable<T['root']>;
     theme: Theme<T>;
     themes: Themes<T>;
     helpers: {
-        mq: Expand<MediaQueries<NonNullable<T['breakPoints']>>>;
-        styleSheets: Expand<StyleSheets>;
+        mq: MediaQueries<NonNullable<T['breakPoints']>>;
+        styleSheets: StyleSheets;
     };
-} : never;
+}> : never;
 type MediaFlags<T extends KnownInitGuide> = Record<keyof T['breakPoints'], boolean>;
 type ThemeFlags<T extends KnownInitGuide> = Record<Theme<T>['name'], boolean>;
 type TagsFlags<T extends KnownInitGuide> = Record<Theme<T>['tags'][number], boolean>;
-export type BaseGuide<T> = T extends KnownInitGuide ? InitGuide<T> & {
+export type BaseGuide<T> = T extends KnownInitGuide ? Expand<InitGuide<T> & {
     helpers: {
         setTheme: (n: Theme<T>['name']) => void;
     };
@@ -103,18 +103,18 @@ export type BaseGuide<T> = T extends KnownInitGuide ? InitGuide<T> & {
         themeFlags: ThemeFlags<T>;
         tagsFlags: TagsFlags<T>;
     };
-} : never;
-type PCSS_Rule = (g: any) => CSS_Rule;
+}> : never;
+type PCSS_Rule = (g: any) => CSS_Rule | SIM_Object;
 export type KnownExtended = {
-    [K: string]: CSS_Rule | PCSS_Rule;
+    [K: string]: CSS_Rule | PCSS_Rule | SIM_Object;
 };
 export type InitExtend<T> = T extends KnownExtended ? T : never;
 export type Extended<E extends KnownExtended> = {
     [K in keyof E]: E[K] extends PCSS_Rule ? ReturnType<E[K]> : E[K];
 };
-export type FullGuide<T, E> = T extends KnownInitGuide ? E extends KnownExtended ? BaseGuide<T> & {
+export type FullGuide<T, E> = T extends KnownInitGuide ? E extends KnownExtended ? Expand<BaseGuide<T> & {
     extended: Extended<E>;
-} : never : never;
+}> : never : never;
 export declare const emptyTheme: KnownTheme;
 export declare const emptyConfig: {
     breakPoints: {};
