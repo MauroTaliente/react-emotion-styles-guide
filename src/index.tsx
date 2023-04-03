@@ -267,7 +267,7 @@ export const getInitConfig = <T extends KnownInitGuide>(init: InitProps<T>) => {
   // BASE
   const base = mergeDeepRight(empty.base, init.base || {});
   verifyScheme(base, Object, VERIFY.TY);
-  verifyScheme(base, empty.base, VERIFY.KEYS_IN_KEYS, true);
+  verifyScheme(empty.base, base, VERIFY.KEYS_IN_KEYS, true);
   verifyScheme(base.colors, String, VERIFY.VALUES_TY_IN_ARR, true);
   verifyScheme(base.fontFamily, String, VERIFY.VALUES_TY_IN_ARR, true);
 
@@ -320,13 +320,12 @@ const processExtends = <T extends KnownInitGuide, E extends KnownExtended>(
   extended: InitExtend<E>,
 ) => {
   const ready = reduce((pre: object, key: string) => {
-    let result;
     const rule = extended[key];
     if (typeof rule === 'function') {
-      result = rule(guide);
+      return { ...pre, [key]: rule(guide) };
+    } else {
+      return { ...pre, [key]: rule };
     }
-    result = rule;
-    return { ...pre, [key]: result };
   }, {} as Extended<E>)(keys(extended) as any) as Extended<E>;
   return ready;
 };

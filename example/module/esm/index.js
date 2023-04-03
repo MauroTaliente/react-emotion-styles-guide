@@ -235,7 +235,7 @@ export var getInitConfig = function (init) {
     // BASE
     var base = mergeDeepRight(empty.base, init.base || {});
     verifyScheme(base, Object, VERIFY.TY);
-    verifyScheme(base, empty.base, VERIFY.KEYS_IN_KEYS, true);
+    verifyScheme(empty.base, base, VERIFY.KEYS_IN_KEYS, true);
     verifyScheme(base.colors, String, VERIFY.VALUES_TY_IN_ARR, true);
     verifyScheme(base.fontFamily, String, VERIFY.VALUES_TY_IN_ARR, true);
     // THEMES
@@ -290,13 +290,14 @@ export var getInitConfig = function (init) {
 // EXTENDS
 var processExtends = function (guide, extended) {
     var ready = reduce(function (pre, key) {
-        var _a;
-        var result;
+        var _a, _b;
         var rule = extended[key];
-        if (is(Function, rule))
-            result = rule(guide);
-        result = rule;
-        return __assign(__assign({}, pre), (_a = {}, _a[key] = result, _a));
+        if (typeof rule === 'function') {
+            return __assign(__assign({}, pre), (_a = {}, _a[key] = rule(guide), _a));
+        }
+        else {
+            return __assign(__assign({}, pre), (_b = {}, _b[key] = rule, _b));
+        }
     }, {})(keys(extended));
     return ready;
 };
