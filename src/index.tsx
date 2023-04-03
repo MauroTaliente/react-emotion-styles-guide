@@ -322,7 +322,9 @@ const processExtends = <T extends KnownInitGuide, E extends KnownExtended>(
   const ready = reduce((pre: object, key: string) => {
     let result;
     const rule = extended[key];
-    if (is(Function, rule)) result = rule(guide);
+    if (typeof rule === 'function') {
+      result = rule(guide);
+    }
     result = rule;
     return { ...pre, [key]: result };
   }, {} as Extended<E>)(keys(extended) as any) as Extended<E>;
