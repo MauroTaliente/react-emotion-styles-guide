@@ -10,7 +10,7 @@ export default {
         spin: 'spin 1s linear infinite',
         ping: 'ping 1s cubic-bezier(0, 0, 0.2, 1) infinite',
         pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        bounce: 'bounce 1s infinite'
+        bounce: 'bounce 1s infinite',
     },
     aria: {
         checked: 'checked="true"',
@@ -20,12 +20,12 @@ export default {
         pressed: 'pressed="true"',
         readonly: 'readonly="true"',
         required: 'required="true"',
-        selected: 'selected="true"'
+        selected: 'selected="true"',
     },
     aspectRatio: {
         auto: 'auto',
         square: '1 / 1',
-        video: '16 / 9'
+        video: '16 / 9',
     },
     backdropBlur: function (_a) {
         var theme = _a.theme;
@@ -76,7 +76,7 @@ export default {
         'gradient-to-b': 'linear-gradient(to bottom, var(--tw-gradient-stops))',
         'gradient-to-bl': 'linear-gradient(to bottom left, var(--tw-gradient-stops))',
         'gradient-to-l': 'linear-gradient(to left, var(--tw-gradient-stops))',
-        'gradient-to-tl': 'linear-gradient(to top left, var(--tw-gradient-stops))'
+        'gradient-to-tl': 'linear-gradient(to top left, var(--tw-gradient-stops))',
     },
     backgroundOpacity: function (_a) {
         var theme = _a.theme;
@@ -91,12 +91,12 @@ export default {
         right: 'right',
         'right-bottom': 'right bottom',
         'right-top': 'right top',
-        top: 'top'
+        top: 'top',
     },
     backgroundSize: {
         auto: 'auto',
         cover: 'cover',
-        contain: 'contain'
+        contain: 'contain',
     },
     blur: {
         0: '0',
@@ -107,7 +107,7 @@ export default {
         lg: '16px',
         xl: '24px',
         '2xl': '40px',
-        '3xl': '64px'
+        '3xl': '64px',
     },
     borderColor: function (_a) {
         var theme = _a.theme;
@@ -126,7 +126,7 @@ export default {
         xl: '0.75rem',
         '2xl': '1rem',
         '3xl': '1.5rem',
-        full: '9999px'
+        full: '9999px',
     },
     borderSpacing: function (_a) {
         var theme = _a.theme;
@@ -137,7 +137,7 @@ export default {
         0: '0px',
         2: '2px',
         4: '4px',
-        8: '8px'
+        8: '8px',
     },
     boxShadow: {
         sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
@@ -147,7 +147,7 @@ export default {
         xl: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
         '2xl': '0 25px 50px -12px rgb(0 0 0 / 0.25)',
         inner: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)',
-        none: 'none'
+        none: 'none',
     },
     boxShadowColor: function (_a) {
         var theme = _a.theme;
@@ -164,7 +164,7 @@ export default {
         110: '1.1',
         125: '1.25',
         150: '1.5',
-        200: '2'
+        200: '2',
     },
     caretColor: function (_a) {
         var theme = _a.theme;
@@ -199,7 +199,7 @@ export default {
             purple: colors.purple,
             fuchsia: colors.fuchsia,
             pink: colors.pink,
-            rose: colors.rose
+            rose: colors.rose,
         });
     },
     columns: {
@@ -228,11 +228,11 @@ export default {
         '4xl': '56rem',
         '5xl': '64rem',
         '6xl': '72rem',
-        '7xl': '80rem'
+        '7xl': '80rem',
     },
     container: {},
     content: {
-        none: 'none'
+        none: 'none',
     },
     contrast: {
         0: '0',
@@ -241,11 +241,11 @@ export default {
         100: '1',
         125: '1.25',
         150: '1.5',
-        200: '2'
+        200: '2',
     },
     cursor: {
         auto: 'auto',
-        "default": 'default',
+        default: 'default',
         pointer: 'pointer',
         wait: 'wait',
         text: 'text',
@@ -279,7 +279,7 @@ export default {
         'nesw-resize': 'nesw-resize',
         'nwse-resize': 'nwse-resize',
         'zoom-in': 'zoom-in',
-        'zoom-out': 'zoom-out'
+        'zoom-out': 'zoom-out',
     },
     divideColor: function (_a) {
         var theme = _a.theme;
@@ -300,7 +300,7 @@ export default {
         lg: ['0 10px 8px rgb(0 0 0 / 0.04)', '0 4px 3px rgb(0 0 0 / 0.1)'],
         xl: ['0 20px 13px rgb(0 0 0 / 0.03)', '0 8px 5px rgb(0 0 0 / 0.08)'],
         '2xl': '0 25px 25px rgb(0 0 0 / 0.15)',
-        none: '0 0 #0000'
+        none: '0 0 #0000',
     },
     fill: function (_a) {
         var theme = _a.theme;
@@ -310,7 +310,7 @@ export default {
         1: '1 1 0%',
         auto: '1 1 auto',
         initial: '0 1 auto',
-        none: 'none'
+        none: 'none',
     },
     flexBasis: function (_a) {
         var theme = _a.theme;
@@ -318,11 +318,11 @@ export default {
     },
     flexGrow: {
         0: '0',
-        DEFAULT: '1'
+        DEFAULT: '1',
     },
     flexShrink: {
         0: '0',
-        DEFAULT: '1'
+        DEFAULT: '1',
     },
     fontFamily: {
         sans: [
@@ -351,7 +351,7 @@ export default {
             '"Liberation Mono"',
             '"Courier New"',
             'monospace',
-        ]
+        ],
     },
     fontSize: {
         xs: ['0.75rem', { lineHeight: '1rem' }],
@@ -366,7 +366,7 @@ export default {
         '6xl': ['3.75rem', { lineHeight: '1' }],
         '7xl': ['4.5rem', { lineHeight: '1' }],
         '8xl': ['6rem', { lineHeight: '1' }],
-        '9xl': ['8rem', { lineHeight: '1' }]
+        '9xl': ['8rem', { lineHeight: '1' }],
     },
     fontWeight: {
         thin: '100',
@@ -377,7 +377,7 @@ export default {
         semibold: '600',
         bold: '700',
         extrabold: '800',
-        black: '900'
+        black: '900',
     },
     gap: function (_a) {
         var theme = _a.theme;
@@ -389,19 +389,19 @@ export default {
     },
     grayscale: {
         0: '0',
-        DEFAULT: '100%'
+        DEFAULT: '100%',
     },
     gridAutoColumns: {
         auto: 'auto',
         min: 'min-content',
         max: 'max-content',
-        fr: 'minmax(0, 1fr)'
+        fr: 'minmax(0, 1fr)',
     },
     gridAutoRows: {
         auto: 'auto',
         min: 'min-content',
         max: 'max-content',
-        fr: 'minmax(0, 1fr)'
+        fr: 'minmax(0, 1fr)',
     },
     gridColumn: {
         auto: 'auto',
@@ -417,7 +417,7 @@ export default {
         'span-10': 'span 10 / span 10',
         'span-11': 'span 11 / span 11',
         'span-12': 'span 12 / span 12',
-        'span-full': '1 / -1'
+        'span-full': '1 / -1',
     },
     gridColumnEnd: {
         auto: 'auto',
@@ -433,7 +433,7 @@ export default {
         10: '10',
         11: '11',
         12: '12',
-        13: '13'
+        13: '13',
     },
     gridColumnStart: {
         auto: 'auto',
@@ -449,7 +449,7 @@ export default {
         10: '10',
         11: '11',
         12: '12',
-        13: '13'
+        13: '13',
     },
     gridRow: {
         auto: 'auto',
@@ -459,7 +459,7 @@ export default {
         'span-4': 'span 4 / span 4',
         'span-5': 'span 5 / span 5',
         'span-6': 'span 6 / span 6',
-        'span-full': '1 / -1'
+        'span-full': '1 / -1',
     },
     gridRowEnd: {
         auto: 'auto',
@@ -469,7 +469,7 @@ export default {
         4: '4',
         5: '5',
         6: '6',
-        7: '7'
+        7: '7',
     },
     gridRowStart: {
         auto: 'auto',
@@ -479,7 +479,7 @@ export default {
         4: '4',
         5: '5',
         6: '6',
-        7: '7'
+        7: '7',
     },
     gridTemplateColumns: {
         none: 'none',
@@ -494,7 +494,7 @@ export default {
         9: 'repeat(9, minmax(0, 1fr))',
         10: 'repeat(10, minmax(0, 1fr))',
         11: 'repeat(11, minmax(0, 1fr))',
-        12: 'repeat(12, minmax(0, 1fr))'
+        12: 'repeat(12, minmax(0, 1fr))',
     },
     gridTemplateRows: {
         none: 'none',
@@ -503,7 +503,7 @@ export default {
         3: 'repeat(3, minmax(0, 1fr))',
         4: 'repeat(4, minmax(0, 1fr))',
         5: 'repeat(5, minmax(0, 1fr))',
-        6: 'repeat(6, minmax(0, 1fr))'
+        6: 'repeat(6, minmax(0, 1fr))',
     },
     height: function (_a) {
         var theme = _a.theme;
@@ -515,7 +515,7 @@ export default {
         30: '30deg',
         60: '60deg',
         90: '90deg',
-        180: '180deg'
+        180: '180deg',
     },
     inset: function (_a) {
         var theme = _a.theme;
@@ -523,35 +523,35 @@ export default {
     },
     invert: {
         0: '0',
-        DEFAULT: '100%'
+        DEFAULT: '100%',
     },
     keyframes: {
         spin: {
             to: {
-                transform: 'rotate(360deg)'
-            }
+                transform: 'rotate(360deg)',
+            },
         },
         ping: {
             '75%, 100%': {
                 transform: 'scale(2)',
-                opacity: '0'
-            }
+                opacity: '0',
+            },
         },
         pulse: {
             '50%': {
-                opacity: '.5'
-            }
+                opacity: '.5',
+            },
         },
         bounce: {
             '0%, 100%': {
                 transform: 'translateY(-25%)',
-                animationTimingFunction: 'cubic-bezier(0.8,0,1,1)'
+                animationTimingFunction: 'cubic-bezier(0.8,0,1,1)',
             },
             '50%': {
                 transform: 'none',
-                animationTimingFunction: 'cubic-bezier(0,0,0.2,1)'
-            }
-        }
+                animationTimingFunction: 'cubic-bezier(0,0,0.2,1)',
+            },
+        },
     },
     letterSpacing: {
         tighter: '-0.05em',
@@ -559,7 +559,7 @@ export default {
         normal: '0em',
         wide: '0.025em',
         wider: '0.05em',
-        widest: '0.1em'
+        widest: '0.1em',
     },
     lineHeight: {
         none: '1',
@@ -575,12 +575,12 @@ export default {
         7: '1.75rem',
         8: '2rem',
         9: '2.25rem',
-        10: '2.5rem'
+        10: '2.5rem',
     },
     listStyleType: {
         none: 'none',
         disc: 'disc',
-        decimal: 'decimal'
+        decimal: 'decimal',
     },
     margin: function (_a) {
         var theme = _a.theme;
@@ -600,14 +600,14 @@ export default {
         screen: '100vh',
         min: 'min-content',
         max: 'max-content',
-        fit: 'fit-content'
+        fit: 'fit-content',
     },
     minWidth: {
         0: '0px',
         full: '100%',
         min: 'min-content',
         max: 'max-content',
-        fit: 'fit-content'
+        fit: 'fit-content',
     },
     objectPosition: {
         bottom: 'bottom',
@@ -618,7 +618,7 @@ export default {
         right: 'right',
         'right-bottom': 'right bottom',
         'right-top': 'right top',
-        top: 'top'
+        top: 'top',
     },
     opacity: {
         0: '0',
@@ -635,7 +635,7 @@ export default {
         80: '0.8',
         90: '0.9',
         95: '0.95',
-        100: '1'
+        100: '1',
     },
     order: {
         first: '-9999',
@@ -652,7 +652,7 @@ export default {
         9: '9',
         10: '10',
         11: '11',
-        12: '12'
+        12: '12',
     },
     outlineColor: function (_a) {
         var theme = _a.theme;
@@ -663,14 +663,14 @@ export default {
         1: '1px',
         2: '2px',
         4: '4px',
-        8: '8px'
+        8: '8px',
     },
     outlineWidth: {
         0: '0px',
         1: '1px',
         2: '2px',
         4: '4px',
-        8: '8px'
+        8: '8px',
     },
     padding: function (_a) {
         var theme = _a.theme;
@@ -697,7 +697,7 @@ export default {
         1: '1px',
         2: '2px',
         4: '4px',
-        8: '8px'
+        8: '8px',
     },
     ringOpacity: function (_a) {
         var theme = _a.theme;
@@ -709,7 +709,7 @@ export default {
         1: '1px',
         2: '2px',
         4: '4px',
-        8: '8px'
+        8: '8px',
     },
     rotate: {
         0: '0deg',
@@ -720,14 +720,14 @@ export default {
         12: '12deg',
         45: '45deg',
         90: '90deg',
-        180: '180deg'
+        180: '180deg',
     },
     saturate: {
         0: '0',
         50: '.5',
         100: '1',
         150: '1.5',
-        200: '2'
+        200: '2',
     },
     scale: {
         0: '0',
@@ -739,14 +739,14 @@ export default {
         105: '1.05',
         110: '1.1',
         125: '1.25',
-        150: '1.5'
+        150: '1.5',
     },
     screens: {
         sm: '640px',
         md: '768px',
         lg: '1024px',
         xl: '1280px',
-        '2xl': '1536px'
+        '2xl': '1536px',
     },
     scrollMargin: function (_a) {
         var theme = _a.theme;
@@ -758,7 +758,7 @@ export default {
     },
     sepia: {
         0: '0',
-        DEFAULT: '100%'
+        DEFAULT: '100%',
     },
     skew: {
         0: '0deg',
@@ -766,7 +766,7 @@ export default {
         2: '2deg',
         3: '3deg',
         6: '6deg',
-        12: '12deg'
+        12: '12deg',
     },
     space: function (_a) {
         var theme = _a.theme;
@@ -807,7 +807,7 @@ export default {
         64: '16rem',
         72: '18rem',
         80: '20rem',
-        96: '24rem'
+        96: '24rem',
     },
     stroke: function (_a) {
         var theme = _a.theme;
@@ -816,7 +816,7 @@ export default {
     strokeWidth: {
         0: '0',
         1: '1',
-        2: '2'
+        2: '2',
     },
     supports: {},
     data: {},
@@ -835,7 +835,7 @@ export default {
         1: '1px',
         2: '2px',
         4: '4px',
-        8: '8px'
+        8: '8px',
     },
     textIndent: function (_a) {
         var theme = _a.theme;
@@ -851,7 +851,7 @@ export default {
         1: '1px',
         2: '2px',
         4: '4px',
-        8: '8px'
+        8: '8px',
     },
     transformOrigin: {
         center: 'center',
@@ -862,7 +862,7 @@ export default {
         bottom: 'bottom',
         'bottom-left': 'bottom left',
         left: 'left',
-        'top-left': 'top left'
+        'top-left': 'top left',
     },
     transitionDelay: {
         0: '0s',
@@ -873,7 +873,7 @@ export default {
         300: '300ms',
         500: '500ms',
         700: '700ms',
-        1000: '1000ms'
+        1000: '1000ms',
     },
     transitionDuration: {
         DEFAULT: '150ms',
@@ -885,7 +885,7 @@ export default {
         300: '300ms',
         500: '500ms',
         700: '700ms',
-        1000: '1000ms'
+        1000: '1000ms',
     },
     transitionProperty: {
         none: 'none',
@@ -894,14 +894,14 @@ export default {
         colors: 'color, background-color, border-color, outline-color, text-decoration-color, fill, stroke',
         opacity: 'opacity',
         shadow: 'box-shadow',
-        transform: 'transform'
+        transform: 'transform',
     },
     transitionTimingFunction: {
         DEFAULT: 'cubic-bezier(0.4, 0, 0.2, 1)',
         linear: 'linear',
-        "in": 'cubic-bezier(0.4, 0, 1, 1)',
+        in: 'cubic-bezier(0.4, 0, 1, 1)',
         out: 'cubic-bezier(0, 0, 0.2, 1)',
-        'in-out': 'cubic-bezier(0.4, 0, 0.2, 1)'
+        'in-out': 'cubic-bezier(0.4, 0, 0.2, 1)',
     },
     translate: function (_a) {
         var theme = _a.theme;
@@ -915,7 +915,7 @@ export default {
         auto: 'auto',
         scroll: 'scroll-position',
         contents: 'contents',
-        transform: 'transform'
+        transform: 'transform',
     },
     zIndex: {
         auto: 'auto',
@@ -924,7 +924,7 @@ export default {
         20: '20',
         30: '30',
         40: '40',
-        50: '50'
-    }
+        50: '50',
+    },
 };
 //# sourceMappingURL=extended.js.map

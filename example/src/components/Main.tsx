@@ -12,10 +12,11 @@ const Main = () => {
 
   const styles = styleSheets({
     main: {
-      width: '100%',
+      // width: '100%',
       height: ['265px', '128px'],
       color: extended.colors.grays40,
       cursor: 'pointer',
+      maxWidth: extended.maxWidth.screenSm,
     },
   });
 

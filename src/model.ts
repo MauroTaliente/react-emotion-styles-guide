@@ -56,10 +56,7 @@ export type Reducer = (p1: any, p2: [Actions, any]) => any;
 export type Flags<T> = { [Property in keyof T]: boolean };
 export type WrapFC = FC<{ children: ReactElement }>;
 export type Entries<T> = { [K in keyof T]: [K, T[K]] }[keyof T][];
-export type CSS_Properties = {
-  [K in keyof CSS.Properties]: CSS.Properties[K] | CSS.Properties[K][];
-};
-
+export type CSS_Properties = CSS.PropertiesFallback<string | number, number>;
 export type SIM_Object = Record<string, any>;
 export type CSS_Rule = CSS_Properties | CSS_Properties[];
 export type CSS_Rule_Media = CSS_Rule[];

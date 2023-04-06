@@ -1,4 +1,4 @@
-import { InitGuide, BaseGuide, createStyleGuide, CSS_Rule } from '../module/esm';
+import { InitGuide, BaseGuide, createStyleGuide, CSS_Rule, baseExtended, addTag } from '../module/esm';
 
 declare module 'react' {
   interface Attributes {
@@ -100,6 +100,27 @@ type B = BaseGuide<A>;
 const extended = {
   colors: ({ theme }: B) => ({ ...theme.colors, superAcent: theme.colors.acent70 }),
   card: ({ theme }: B) => ({ backgroundColor: theme.colors.acent30, color: 'red' }),
+  maxWidth: ({ breakPoints }: B) => ({
+    none: 'none',
+    0: '0rem',
+    xs: '20rem',
+    sm: '24rem',
+    md: '28rem',
+    lg: '32rem',
+    xl: '36rem',
+    '2xl': '42rem',
+    '3xl': '48rem',
+    '4xl': '56rem',
+    '5xl': '64rem',
+    '6xl': '72rem',
+    '7xl': '80rem',
+    full: '100%',
+    min: 'min-content',
+    max: 'max-content',
+    fit: 'fit-content',
+    prose: '65ch',
+    ...addTag(breakPoints, 'screen'),
+  }),
 };
 
 export const { StyleGuideProvider, useStyleGuide } = createStyleGuide(config, extended);

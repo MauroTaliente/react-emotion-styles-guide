@@ -5,10 +5,11 @@ type GetString<T> = T extends string ? T : string;
 type ChangeKey<B, C, A> = `${GetString<B>}${GetString<C>}${GetString<A>}`;
 
 // UTILS
-export const addTag = <T extends { [K: string]: any }, A extends string>(props: T, tag: A) => {
-  type Keys = keyof T;
-  type Build = { [Key in Keys extends string ? Keys : string as ChangeKey<A, Capitalize<Key>, ''>]: T[Keys] };
-  const joinTag = (pre: any, key: Keys) => ({ ...pre, [`${tag}${key as string}`]: props[key] });
-  const build: Build = R.reduce(joinTag, {})(R.keys(props));
+const capitalized = <W extends string>(word: W) => `${word.charAt(0).toUpperCase()}${word.slice(1)}` as Capitalize<W>;
+
+export const addTag = <T extends Record<string, any>, A extends string>(props: T, tag: A) => {
+  type Build = { [K in keyof T as K extends string ? ChangeKey<A, Capitalize<K>, ''> : K]: T[K] };
+  const joinTag = (pre: any, key: string) => ({ ...pre, [`${tag}${capitalized(key)}`]: props[key] });
+  const build = R.reduce(joinTag, {})(R.keys(props) as string[]) as Build;
   return build;
 };

@@ -9,7 +9,7 @@ export var emptyTheme = {
     name: '',
     tags: [],
     colors: {},
-    fontFamily: {}
+    fontFamily: {},
 };
 export var emptyConfig = {
     breakPoints: {},
@@ -17,6 +17,6 @@ export var emptyConfig = {
     base: {},
     themes: [],
     scheme: {},
-    theme: emptyTheme
+    theme: emptyTheme,
 };
 //# sourceMappingURL=model.js.map

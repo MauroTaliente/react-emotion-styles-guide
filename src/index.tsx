@@ -9,6 +9,7 @@ import facepaint from 'facepaint';
 import newContext from './helpers/context';
 import baseExtended from './helpers/extended';
 import { ForceIRR, ForceCSR } from './helpers/componets';
+import { addTag } from './helpers/utils';
 
 import {
   InitGuide,
@@ -188,7 +189,7 @@ const createMediaQueries = (brakePoints: BrakePoints) => {
 };
 
 // INI CONFIG
-export const getInitConfig = <T extends KnownInitGuide>(init: InitProps<T>) => {
+export const getInitConfig = <const T extends KnownInitGuide>(init: InitProps<T>) => {
   // EMPTY INIT
   const empty = {
     breakPoints: {},
@@ -315,7 +316,7 @@ export const getInitConfig = <T extends KnownInitGuide>(init: InitProps<T>) => {
 };
 
 // EXTENDS
-const processExtends = <T extends KnownInitGuide, E extends KnownExtended>(
+const processExtends = <const T extends KnownInitGuide, const E extends KnownExtended>(
   guide: BaseGuide<T>,
   extended: InitExtend<E>,
 ) => {
@@ -330,7 +331,7 @@ const processExtends = <T extends KnownInitGuide, E extends KnownExtended>(
   return ready;
 };
 
-const getExtended = <E extends KnownExtended /*, B extends SIM_Object */>(
+const getExtended = <const E extends KnownExtended /*, B extends SIM_Object */>(
   // baseExtendedOn = false, todo add support
   // baseExtended = {} as B, todo add support
   customExtended = {} as InitExtend<E>,
@@ -368,7 +369,7 @@ const getOptions = <T extends object>(baseOptions: T, newOptions: object) => {
 };
 
 // MAIN
-const createStyleGuide = <T extends KnownInitGuide, E extends KnownExtended>(
+const createStyleGuide = <const T extends KnownInitGuide, const E extends KnownExtended>(
   config: InitProps<T>,
   customExtended = {} as InitExtend<E>,
 ) => {
@@ -440,6 +441,7 @@ const createStyleGuide = <T extends KnownInitGuide, E extends KnownExtended>(
 
 export {
   // main
+  addTag,
   ForceIRR,
   ForceCSR,
   baseExtended,

@@ -9,6 +9,7 @@ import facepaint from 'facepaint';
 import newContext from './helpers/context';
 import baseExtended from './helpers/extended';
 import { ForceIRR, ForceCSR } from './helpers/componets';
+import { addTag } from './helpers/utils';
 import { Actions, } from './model';
 var 
 // empty,
@@ -164,28 +165,28 @@ export var getInitConfig = function (init) {
             overlap: true,
             literal: false,
             styleSheets: 'simple',
-            baseExtendedOn: false
+            baseExtendedOn: false,
         },
         root: {},
         base: {
             colors: {},
-            fontFamily: {}
+            fontFamily: {},
         },
         theme: {
             name: '',
             tags: [],
             colors: {},
-            fontFamily: {}
+            fontFamily: {},
         },
         themes: [],
-        scheme: {}
+        scheme: {},
     };
     // SCHEME
     var emptyScheme = {
         name: null,
         tags: null,
         colors: null,
-        fontFamily: null
+        fontFamily: null,
     };
     var baseScheme = init.scheme || empty.scheme;
     verifyScheme(baseScheme, Object, VERIFY.TY, true);
@@ -283,8 +284,8 @@ export var getInitConfig = function (init) {
         options: options,
         helpers: {
             mq: mq,
-            styleSheets: styleSheets
-        }
+            styleSheets: styleSheets,
+        },
     };
 };
 // EXTENDS
@@ -344,7 +345,7 @@ var createStyleGuide = function (config, customExtended) {
     var _a = newContext({
         name: 'StyleGuide',
         initState: initGuide,
-        reducer: reducer
+        reducer: reducer,
     }), BaseProvider = _a.StyleGuideProvider, useStyleGuideState = _a.useStyleGuideState, useStyleGuideUpdater = _a.useStyleGuideUpdater;
     var StyleGuideProvider = getProvider(initGuide.options.forceIrr, BaseProvider);
     var extended = getExtended(customExtended);
@@ -379,13 +380,13 @@ var createStyleGuide = function (config, customExtended) {
             // base
             var base = mergeDeepRight(initGuide, {
                 helpers: {
-                    setTheme: setTheme
+                    setTheme: setTheme,
                 },
                 state: {
                     themeFlags: themeFlags,
                     tagsFlags: tagsFlags,
-                    mediaFlags: mediaFlags
-                }
+                    mediaFlags: mediaFlags,
+                },
             });
             // extended
             var full = __assign(__assign({}, base), { extended: processExtends(base, extended) });
@@ -396,10 +397,10 @@ var createStyleGuide = function (config, customExtended) {
     return {
         StyleGuideProvider: StyleGuideProvider,
         useStyleGuide: useStyleGuide,
-        initGuide: initGuide
+        initGuide: initGuide,
     };
 };
 export { 
 // main
-ForceIRR, ForceCSR, baseExtended, createStyleGuide, createStyleGuide as default, };
+addTag, ForceIRR, ForceCSR, baseExtended, createStyleGuide, createStyleGuide as default, };
 //# sourceMappingURL=index.js.map
