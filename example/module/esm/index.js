@@ -204,7 +204,7 @@ export var getInitConfig = function (init) {
     // media quieris map
     var mq = createMediaQueries(breakPoints);
     // media quieris with facepaint and css function helper
-    var facepaintCss = function (rule, options) {
+    var mqCss = function (rule, options) {
         if (options === void 0) { options = stOptions; }
         var format = map(function (point) { return point; })(values(mq));
         var build = facepaint(format, options);
@@ -220,7 +220,7 @@ export var getInitConfig = function (init) {
         if (options === void 0) { options = stOptions; }
         var process = (function () {
             if (mode === 'facepaint') {
-                var mqCssReady = curry(facepaintCss)(__, options);
+                var mqCssReady = curry(mqCss)(__, options);
                 return mqCssReady;
             }
             return siCss;

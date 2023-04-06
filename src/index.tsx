@@ -240,7 +240,7 @@ export const getInitConfig = <const T extends KnownInitGuide>(init: InitProps<T>
   // media quieris map
   const mq = createMediaQueries(breakPoints) as InitGuide<T>['helpers']['mq'];
   // media quieris with facepaint and css function helper
-  const facepaintCss = (rule: CSS_Rule, options: facepaint.Options = stOptions) => {
+  const mqCss = (rule: CSS_Rule, options: facepaint.Options = stOptions) => {
     const format = map((point: string) => point)(values(mq) as string[]);
     const build = facepaint(format, options);
     return build(rule);
@@ -253,7 +253,7 @@ export const getInitConfig = <const T extends KnownInitGuide>(init: InitProps<T>
   const styleSheets = (rules: CSS_Rules, mode = stMode, options = stOptions) => {
     const process = (() => {
       if (mode === 'facepaint') {
-        const mqCssReady = curry(facepaintCss)(__, options);
+        const mqCssReady = curry(mqCss)(__, options);
         return mqCssReady;
       }
       return siCss;
@@ -311,6 +311,8 @@ export const getInitConfig = <const T extends KnownInitGuide>(init: InitProps<T>
     helpers: {
       mq,
       styleSheets,
+      mqCss,
+      siCss,
     },
   } as InitGuide<T>;
 };

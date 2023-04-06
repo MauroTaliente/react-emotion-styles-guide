@@ -82,7 +82,7 @@ export type KnownBuildGuide = {
     };
     helpers: {
         mq: Record<number, string>;
-        facepaintCss: MediaProcessCss;
+        mqCss: MediaProcessCss;
         styleSheets: StyleSheets;
         setTheme: (n: string) => void;
     };

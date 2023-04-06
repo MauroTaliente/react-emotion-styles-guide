@@ -119,6 +119,9 @@ export type StyleSheets = <R extends CSS_Rules>(
   processStyles?: ProcessStyles,
   options?: facepaint.Options,
 ) => R; // TODO mejora pendiente.
+export type mqCss = <R extends CSS_Rule>(rule: R, options?: facepaint.Options) => R;
+export type SiCss = <R extends CSS_Rule>(rule: R) => R;
+
 export type MediaQueries<M extends BrakePoints> = {
   [K in keyof M]: `@media (min-width: ${M[K]}px)`;
 };
@@ -133,6 +136,8 @@ export type InitGuide<T> = T extends KnownInitGuide
       helpers: {
         mq: MediaQueries<NonNullable<T['breakPoints']>>;
         styleSheets: StyleSheets;
+        mqCss: mqCss;
+        siCss: SiCss;
       };
     }>
   : never;
