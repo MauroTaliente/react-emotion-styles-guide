@@ -1,4 +1,4 @@
-import { __assign } from "tslib";
+import { __assign, __spreadArray } from "tslib";
 // SI
 import React, { useMemo, useState } from 'react';
 // utils
@@ -13,7 +13,7 @@ import { addTag } from './helpers/utils';
 import { Actions, } from './model';
 var 
 // empty,
-toString = R.toString, equals = R.equals, map = R.map, forEach = R.forEach, whereEq = R.whereEq, keys = R.keys, values = R.values, reduce = R.reduce, mergeDeepRight = R.mergeDeepRight, includes = R.includes, all = R.all, type = R.type, is = R.is, intersection = R.intersection, find = R.find, findIndex = R.findIndex, last = R.last, curry = R.curry, or = R.or, __ = R.__;
+isEmpty = R.isEmpty, toString = R.toString, equals = R.equals, map = R.map, forEach = R.forEach, whereEq = R.whereEq, keys = R.keys, values = R.values, reduce = R.reduce, mergeDeepRight = R.mergeDeepRight, includes = R.includes, all = R.all, type = R.type, is = R.is, intersection = R.intersection, find = R.find, findIndex = R.findIndex, last = R.last, curry = R.curry, or = R.or, not = R.not, and = R.and, __ = R.__;
 var IS_SSR = typeof document === 'undefined';
 if (IS_SSR) {
     React.useLayoutEffect = React.useEffect;
@@ -94,17 +94,57 @@ var verifyScheme = function (received, expected, v, emptyMode, printType) {
 };
 // SUPPORT FNS
 var getLayout = function () { return (IS_SSR ? { width: 0, height: 0 } : { width: window.innerWidth, height: window.innerHeight }); };
-// export useRefreshLayot posible include in next versions.
-// const useRefreshLayot = () => {
-//   const [layout, setLayout] = useState(getLayout());
-//   const updateLayout = () => setLayout(getLayout());
-//   useIsomorphicLayoutEffect(() => {
-//     updateLayout();
-//     window.addEventListener('resize', updateLayout);
-//     return () => window.removeEventListener('resize', updateLayout);
-//   }, []);
-//   return layout;
-// };
+// MERGE CSS RULES
+var mergeCss = function (css, key) {
+    if (key === void 0) { key = ''; }
+    // rejected any type that is not Array or Object.
+    if (not(or(is(Object, css), is(Array, css)))) {
+        return console.error("this is't a Object");
+    }
+    // is object remove prop.
+    if (and(is(Object, css), key)) {
+        var copy = __assign({}, css);
+        if (copy[key])
+            delete copy[key];
+        return copy;
+    }
+    // array move.
+    var result = reduce(function (pre, cur) {
+        // recursive child.
+        if (is(Array, cur)) {
+            return mergeCss(__spreadArray(__spreadArray([], pre, true), cur, true));
+        }
+        // if initial prop.
+        if (!pre.length) {
+            return [cur];
+        }
+        // if error in form.
+        if (not(and(is(Object, pre[0]), is(Object, cur)))) {
+            return console.error("this are't a CSS props");
+        }
+        var before = pre.pop() || {};
+        forEach(function (curKey) {
+            if (and(before[curKey], not(curKey.match('@media')))) {
+                before = mergeCss(before, curKey);
+                forEach(function (befKey) {
+                    if (is(Object, before[befKey])) {
+                        before[befKey] = mergeCss(before[befKey], curKey);
+                        if (isEmpty(before[befKey]))
+                            delete before[befKey];
+                    }
+                })(keys(before));
+            }
+        })(keys(cur));
+        // if empty before.
+        if (isEmpty(before)) {
+            return __spreadArray(__spreadArray([], pre, true), [cur], false);
+        }
+        // return new.
+        return __spreadArray(__spreadArray([], pre, true), [before, cur], false);
+    }, [])(css);
+    // end.
+    return result;
+}; // todo missing infer pros.
 var createMediaFlafs = function (bp, width) {
     return reduce(function (pre, key) {
         var _a;
@@ -231,6 +271,7 @@ export var getInitConfig = function (init) {
         }, {})(keys(rules));
         return result;
     }; // => todo add type.
+    // merge css out.
     // ROOT
     var root = mergeDeepRight(empty.root, init.root || {});
     // BASE
@@ -285,6 +326,9 @@ export var getInitConfig = function (init) {
         helpers: {
             mq: mq,
             styleSheets: styleSheets,
+            mergeCss: mergeCss,
+            mqCss: mqCss,
+            siCss: siCss,
         },
     };
 };
@@ -402,5 +446,5 @@ var createStyleGuide = function (config, customExtended) {
 };
 export { 
 // main
-addTag, ForceIRR, ForceCSR, baseExtended, createStyleGuide, createStyleGuide as default, };
+addTag, mergeCss, ForceIRR, ForceCSR, baseExtended, createStyleGuide, createStyleGuide as default, };
 //# sourceMappingURL=index.js.map

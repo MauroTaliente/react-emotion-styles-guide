@@ -75,6 +75,9 @@ export type InitProps<T> = T extends KnownInitGuide ? T : never;
 type Themes<T extends KnownInitGuide> = RequiredDeep<T['themes']>;
 type Theme<T extends KnownInitGuide> = Merge<Themes<T>[number], NonNullable<T['base']>, 'deep'>;
 export type StyleSheets = <R extends CSS_Rules>(rules: R, processStyles?: ProcessStyles, options?: facepaint.Options) => R;
+export type mqCss = <R extends CSS_Rule>(rule: R, options?: facepaint.Options) => R;
+export type SiCss = <R extends CSS_Rule>(rule: R) => R;
+export type meCss = (css: any, key?: string) => any;
 export type MediaQueries<M extends BrakePoints> = {
     [K in keyof M]: `@media (min-width: ${M[K]}px)`;
 };
@@ -87,6 +90,9 @@ export type InitGuide<T> = T extends KnownInitGuide ? Expand<{
     helpers: {
         mq: MediaQueries<NonNullable<T['breakPoints']>>;
         styleSheets: StyleSheets;
+        mergeCss: meCss;
+        mqCss: mqCss;
+        siCss: SiCss;
     };
 }> : never;
 type MediaFlags<T extends KnownInitGuide> = Record<keyof T['breakPoints'], boolean>;

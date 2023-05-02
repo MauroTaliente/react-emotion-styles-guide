@@ -18,6 +18,7 @@ import {
   Actions,
   CSS_Rule,
   CSS_Rules,
+  CSS_Properties,
   KnownInitGuide,
   KnownTheme,
   BrakePoints,
@@ -33,6 +34,7 @@ import {
 
 const {
   // empty,
+  isEmpty,
   toString,
   equals,
   map,
@@ -52,6 +54,8 @@ const {
   last,
   curry,
   or,
+  not,
+  and,
   __,
 } = R;
 
@@ -127,17 +131,54 @@ const verifyScheme = (
 // SUPPORT FNS
 const getLayout = () => (IS_SSR ? { width: 0, height: 0 } : { width: window.innerWidth, height: window.innerHeight });
 
-// export useRefreshLayot posible include in next versions.
-// const useRefreshLayot = () => {
-//   const [layout, setLayout] = useState(getLayout());
-//   const updateLayout = () => setLayout(getLayout());
-//   useIsomorphicLayoutEffect(() => {
-//     updateLayout();
-//     window.addEventListener('resize', updateLayout);
-//     return () => window.removeEventListener('resize', updateLayout);
-//   }, []);
-//   return layout;
-// };
+// MERGE CSS RULES
+const mergeCss = (css: any, key = '') => {
+  // rejected any type that is not Array or Object.
+  if (not(or(is(Object, css), is(Array, css)))) {
+    return console.error(`this is't a Object`);
+  }
+  // is object remove prop.
+  if (and(is(Object, css), key)) {
+    const copy = { ...css };
+    if (copy[key]) delete copy[key];
+    return copy;
+  }
+  // array move.
+  const result: any[] = reduce((pre: any[], cur) => {
+    // recursive child.
+    if (is(Array, cur)) {
+      return mergeCss([...pre, ...cur]);
+    }
+    // if initial prop.
+    if (!pre.length) {
+      return [cur];
+    }
+    // if error in form.
+    if (not(and(is(Object, pre[0]), is(Object, cur)))) {
+      return console.error(`this are't a CSS props`);
+    }
+    let before: Record<string, any> = pre.pop() || {};
+    forEach((curKey: keyof typeof before) => {
+      if (and(before[curKey], not(curKey.match('@media')))) {
+        before = mergeCss(before, curKey);
+        forEach((befKey: keyof typeof before) => {
+          if (is(Object, before[befKey])) {
+            before[befKey] = mergeCss(before[befKey], curKey);
+            if (isEmpty(before[befKey])) delete before[befKey];
+          }
+        })(keys(before) as any);
+      }
+    })(keys(cur) as any);
+    // if empty before.
+    if (isEmpty(before)) {
+      return [...pre, cur];
+    }
+    // return new.
+    return [...pre, before, cur];
+  }, [])(css as any);
+  // end.
+  return result;
+}; // todo missing infer pros.
 
 const createMediaFlafs = (bp: BrakePoints, width: number) => {
   return reduce((pre: object, key: string) => {
@@ -263,6 +304,7 @@ export const getInitConfig = <const T extends KnownInitGuide>(init: InitProps<T>
     }, {})(keys(rules) as string[]) as CSS_Rules;
     return result as CSS_Rules;
   }; // => todo add type.
+  // merge css out.
   // ROOT
   const root = mergeDeepRight(empty.root, init.root || {});
   // BASE
@@ -271,7 +313,6 @@ export const getInitConfig = <const T extends KnownInitGuide>(init: InitProps<T>
   verifyScheme(empty.base, base, VERIFY.KEYS_IN_KEYS, true);
   verifyScheme(base.colors, String, VERIFY.VALUES_TY_IN_ARR, true);
   verifyScheme(base.fontFamily, String, VERIFY.VALUES_TY_IN_ARR, true);
-
   // THEMES
   const initThemes = init.themes || empty.themes;
   const themes = map((x: any) => {
@@ -311,6 +352,7 @@ export const getInitConfig = <const T extends KnownInitGuide>(init: InitProps<T>
     helpers: {
       mq,
       styleSheets,
+      mergeCss,
       mqCss,
       siCss,
     },
@@ -444,6 +486,7 @@ const createStyleGuide = <const T extends KnownInitGuide, const E extends KnownE
 export {
   // main
   addTag,
+  mergeCss,
   ForceIRR,
   ForceCSR,
   baseExtended,
@@ -452,6 +495,7 @@ export {
 };
 export type {
   // types
+  CSS_Properties,
   CSS_Rule,
   CSS_Rules,
   KnownInitGuide,

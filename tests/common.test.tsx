@@ -95,3 +95,41 @@ describe('Common render', () => {
     );
   });
 });
+
+describe('Common render', () => {
+  it('merge', () => {
+    // const payload = [
+    //     {
+    //       "width": "100%",
+    //       "@media (min-width: 640px)": {
+    //         "width": "100%",
+    //       },
+    //       "@media (min-width: 1280px)": {
+    //         "width": "100%",
+    //       },
+    //     },
+    //   [
+    //     {
+    //       "justifyContent": "space-between",
+    //       "alignItems": "center",
+    //       "@media (min-width: 640px)": {
+    //         "justifyContent": "center"
+    //       },
+    //       "@media (min-width: 1280px)": {
+    //         "justifyContent": "space-between"
+    //       }
+    //     }
+    //   ],
+    //   [
+    //     {
+    //       "justifyContent": "center",
+    //       "flexDirection": "column",
+    //       "@media (min-width: 1280px)": {
+    //         "flexDirection": "row"
+    //       }
+    //     }
+    //   ]
+    // ];
+    // mergeCss(payload);
+  });
+});

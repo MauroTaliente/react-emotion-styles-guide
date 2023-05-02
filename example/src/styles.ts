@@ -8,12 +8,13 @@ declare module 'react' {
 
 // BPS
 const breakPoints = {
+  // 0: 0,
   sm: 640,
-  md: 768,
-  lg: 1024,
-  xl: 1280,
-  sl: 1440,
-  ul: 1920,
+  md: 1024,
+  lg: 1280,
+  xl: 1440,
+  sl: 1920,
+  ul: 2560,
 };
 
 // SCHEME
@@ -85,6 +86,7 @@ export const config = {
   options: {
     initTheme: 'base',
     styleSheets: 'facepaint',
+    // overlap: true,
   },
   breakPoints,
   root,
@@ -99,7 +101,10 @@ type B = BaseGuide<A>;
 
 const extended = {
   colors: ({ theme }: B) => ({ ...theme.colors, superAcent: theme.colors.acent70 }),
-  card: ({ theme }: B) => ({ backgroundColor: theme.colors.acent30, color: 'red' }),
+  card: ({ theme }: B) => ({
+    backgroundColor: [theme.colors.acent30],
+    color: 'black',
+  }),
   maxWidth: ({ breakPoints }: B) => ({
     none: 'none',
     0: '0rem',
