@@ -2,7 +2,7 @@ import baseExtended from './helpers/extended';
 import { ForceIRR, ForceCSR } from './helpers/componets';
 import { addTag } from './helpers/utils';
 import { InitGuide, BaseGuide, CSS_Rule, CSS_Rules, CSS_Properties, KnownInitGuide, KnownTheme, BrakePoints, WrapFC, InitProps, KnownExtended, InitExtend, Extended, FullGuide, StyleSheets } from './model';
-declare const mergeCss: (css: any, key?: string) => any;
+declare const mergeCss: (css: any) => any;
 export declare const getInitConfig: <const T extends KnownInitGuide>(init: InitProps<T>) => InitGuide<T>;
 declare const createStyleGuide: <const T extends KnownInitGuide, const E extends KnownExtended>(config: InitProps<T>, customExtended?: InitExtend<E>) => {
     StyleGuideProvider: WrapFC;

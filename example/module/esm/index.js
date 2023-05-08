@@ -13,7 +13,7 @@ import { addTag } from './helpers/utils';
 import { Actions, } from './model';
 var 
 // empty,
-isEmpty = R.isEmpty, toString = R.toString, equals = R.equals, map = R.map, forEach = R.forEach, whereEq = R.whereEq, keys = R.keys, values = R.values, reduce = R.reduce, mergeDeepRight = R.mergeDeepRight, includes = R.includes, all = R.all, type = R.type, is = R.is, intersection = R.intersection, find = R.find, findIndex = R.findIndex, last = R.last, curry = R.curry, or = R.or, not = R.not, and = R.and, __ = R.__;
+reverse = R.reverse, isEmpty = R.isEmpty, toString = R.toString, equals = R.equals, map = R.map, forEach = R.forEach, whereEq = R.whereEq, keys = R.keys, values = R.values, reduce = R.reduce, mergeDeepRight = R.mergeDeepRight, includes = R.includes, all = R.all, type = R.type, is = R.is, intersection = R.intersection, find = R.find, findIndex = R.findIndex, last = R.last, curry = R.curry, or = R.or, not = R.not, and = R.and, __ = R.__;
 var IS_SSR = typeof document === 'undefined';
 if (IS_SSR) {
     React.useLayoutEffect = React.useEffect;
@@ -95,57 +95,55 @@ var verifyScheme = function (received, expected, v, emptyMode, printType) {
 // SUPPORT FNS
 var getLayout = function () { return (IS_SSR ? { width: 0, height: 0 } : { width: window.innerWidth, height: window.innerHeight }); };
 // MERGE CSS RULES
-var mergeCss = function (css, key) {
-    if (key === void 0) { key = ''; }
-    // rejected any type that is not Array or Object.
-    if (not(or(is(Object, css), is(Array, css)))) {
-        return console.error("this is't a Object");
-    }
-    // is object remove prop.
-    if (and(is(Object, css), key)) {
-        var copy = __assign({}, css);
-        if (copy[key])
-            delete copy[key];
-        return copy;
-    }
-    // array move.
-    var result = reduce(function (pre, cur) {
-        // recursive child.
-        if (is(Array, cur)) {
-            return mergeCss(__spreadArray(__spreadArray([], pre, true), cur, true));
+var mergeCss = function (css) {
+    var props = [];
+    var buildCss = function (css, acc) {
+        if (acc === void 0) { acc = true; }
+        // rejected any type that is not Array or Object.
+        if (not(or(is(Object, css), is(Array, css)))) {
+            return console.error("this is't a Object");
         }
-        // if initial prop.
-        if (!pre.length) {
-            return [cur];
-        }
-        // if error in form.
-        if (not(and(is(Object, pre[0]), is(Object, cur)))) {
-            return console.error("this are't a CSS props");
-        }
-        var before = pre.pop() || {};
-        forEach(function (curKey) {
-            if (and(before[curKey], not(curKey.match('@media')))) {
-                before = mergeCss(before, curKey);
-                forEach(function (befKey) {
-                    if (is(Object, before[befKey])) {
-                        before[befKey] = mergeCss(before[befKey], curKey);
-                        if (isEmpty(before[befKey]))
-                            delete before[befKey];
-                    }
-                })(keys(before));
+        // is object remove prop.
+        if (not(is(Array, css))) {
+            var lProps_1 = [];
+            var result = reduce(function (pre, prop) {
+                var _a, _b;
+                if (includes(prop, props)) {
+                    return pre;
+                }
+                if (not(is(Object, css[prop]))) {
+                    lProps_1 = __spreadArray(__spreadArray([], lProps_1, true), [prop], false);
+                }
+                if (and(is(Object, css[prop]), not(is(Array, css[prop])))) {
+                    var inner = buildCss(css[prop], false);
+                    if (isEmpty(inner))
+                        return pre;
+                    return __assign(__assign({}, pre), (_a = {}, _a[prop] = inner, _a));
+                }
+                return __assign(__assign({}, pre), (_b = {}, _b[prop] = css[prop], _b));
+            }, {})(keys(css));
+            if (acc) {
+                props = __spreadArray(__spreadArray([], props, true), lProps_1, true);
             }
-        })(keys(cur));
-        // if empty before.
-        if (isEmpty(before)) {
-            return __spreadArray(__spreadArray([], pre, true), [cur], false);
+            return result;
         }
-        // return new.
-        return __spreadArray(__spreadArray([], pre, true), [before, cur], false);
-    }, [])(css);
-    // end.
-    return result;
+        // array move.
+        return reduce(function (pre, gcss) {
+            // recursive child.
+            if (is(Array, gcss)) {
+                return __spreadArray(__spreadArray([], buildCss(gcss), true), pre, true);
+            }
+            // normal
+            var calc = buildCss(gcss);
+            if (isEmpty(calc))
+                return pre;
+            return __spreadArray([calc], pre, true);
+            // --
+        }, [])(reverse(css));
+    };
+    return buildCss(css);
 }; // todo missing infer pros.
-var createMediaFlafs = function (bp, width) {
+var createMediaFlags = function (bp, width) {
     return reduce(function (pre, key) {
         var _a;
         return mergeDeepRight(pre, (_a = {}, _a[key] = bp[key] <= width, _a));
@@ -182,7 +180,7 @@ var useMediaFlags = function (bp, enable) {
         }
         return function () { };
     }, [limitMax, limitMaxIndex, bpValeus]);
-    var mediaFlags = createMediaFlafs(bp, limitMax);
+    var mediaFlags = createMediaFlags(bp, limitMax);
     return mediaFlags;
 };
 var createMediaQueries = function (brakePoints) {

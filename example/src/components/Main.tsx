@@ -12,6 +12,14 @@ const Main = () => {
 
   const styles = styleSheets(
     {
+      code: {
+        fontFamily: 'sans-serif',
+        fontSize: '2em',
+      },
+      compare: {
+        display: 'flex',
+        flexDirection: 'row',
+      },
       main: {
         width: '100%',
         height: ['265px', '128px'],
@@ -21,13 +29,12 @@ const Main = () => {
       },
       one: {
         display: 'flex',
-        maxWidth: ['512px', '265px', '128px'],
-        width: '100%',
+        width: ['512px', '265px', '128px'],
         height: ['265px', '128px'],
         backgroundColor: ['red', 'blue', 'green'],
       },
       two: {
-        // width: '50%',
+        width: '50%',
         height: '512px',
       },
     },
@@ -41,7 +48,6 @@ const Main = () => {
 
   const test = [styles.one, styles.two];
   const testJoin = mergeCss(test);
-  console.log({ test, testJoin });
 
   return (
     <>
@@ -49,6 +55,14 @@ const Main = () => {
         Change theme
       </div>
       <div css={testJoin} />
+      <div css={styles.compare}>
+        <code css={styles.code}>
+          <pre>{JSON.stringify(test, null, 4)}</pre>
+        </code>
+        <code css={styles.code}>
+          <pre>{JSON.stringify(testJoin, null, 4)}</pre>
+        </code>
+      </div>
     </>
   );
 };

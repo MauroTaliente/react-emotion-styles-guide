@@ -34,6 +34,7 @@ import {
 
 const {
   // empty,
+  reverse,
   isEmpty,
   toString,
   equals,
@@ -132,55 +133,52 @@ const verifyScheme = (
 const getLayout = () => (IS_SSR ? { width: 0, height: 0 } : { width: window.innerWidth, height: window.innerHeight });
 
 // MERGE CSS RULES
-const mergeCss = (css: any, key = '') => {
-  // rejected any type that is not Array or Object.
-  if (not(or(is(Object, css), is(Array, css)))) {
-    return console.error(`this is't a Object`);
-  }
-  // is object remove prop.
-  if (and(is(Object, css), key)) {
-    const copy = { ...css };
-    if (copy[key]) delete copy[key];
-    return copy;
-  }
-  // array move.
-  const result: any[] = reduce((pre: any[], cur) => {
-    // recursive child.
-    if (is(Array, cur)) {
-      return mergeCss([...pre, ...cur]);
+const mergeCss = (css: any) => {
+  let props: string[] = [];
+  const buildCss = (css: any, acc = true): any => {
+    // rejected any type that is not Array or Object.
+    if (not(or(is(Object, css), is(Array, css)))) {
+      return console.error(`this is't a Object`);
     }
-    // if initial prop.
-    if (!pre.length) {
-      return [cur];
-    }
-    // if error in form.
-    if (not(and(is(Object, pre[0]), is(Object, cur)))) {
-      return console.error(`this are't a CSS props`);
-    }
-    let before: Record<string, any> = pre.pop() || {};
-    forEach((curKey: keyof typeof before) => {
-      if (and(before[curKey], not(curKey.match('@media')))) {
-        before = mergeCss(before, curKey);
-        forEach((befKey: keyof typeof before) => {
-          if (is(Object, before[befKey])) {
-            before[befKey] = mergeCss(before[befKey], curKey);
-            if (isEmpty(before[befKey])) delete before[befKey];
-          }
-        })(keys(before) as any);
+    // is object remove prop.
+    if (not(is(Array, css))) {
+      let lProps: string[] = [];
+      const result = reduce((pre: any, prop: any) => {
+        if (includes(prop, props)) {
+          return pre;
+        }
+        if (not(is(Object, css[prop]))) {
+          lProps = [...lProps, prop];
+        }
+        if (and(is(Object, css[prop]), not(is(Array, css[prop])))) {
+          const inner = buildCss(css[prop], false);
+          if (isEmpty(inner)) return pre;
+          return { ...pre, [prop]: inner };
+        }
+        return { ...pre, [prop]: css[prop] };
+      }, {})(keys(css) as any);
+      if (acc) {
+        props = [...props, ...lProps];
       }
-    })(keys(cur) as any);
-    // if empty before.
-    if (isEmpty(before)) {
-      return [...pre, cur];
+      return result;
     }
-    // return new.
-    return [...pre, before, cur];
-  }, [])(css as any);
-  // end.
-  return result;
+    // array move.
+    return reduce((pre: object[], gcss: any) => {
+      // recursive child.
+      if (is(Array, gcss)) {
+        return [...buildCss(gcss), ...pre];
+      }
+      // normal
+      const calc = buildCss(gcss);
+      if (isEmpty(calc)) return pre;
+      return [calc, ...pre];
+      // --
+    }, [])(reverse(css) as any);
+  };
+  return buildCss(css);
 }; // todo missing infer pros.
 
-const createMediaFlafs = (bp: BrakePoints, width: number) => {
+const createMediaFlags = (bp: BrakePoints, width: number) => {
   return reduce((pre: object, key: string) => {
     return mergeDeepRight(pre, { [key]: bp[key] <= width });
   }, {})(keys(bp));
@@ -217,7 +215,7 @@ const useMediaFlags = (bp: BrakePoints, enable: boolean) => {
     return () => {};
   }, [limitMax, limitMaxIndex, bpValeus]);
 
-  const mediaFlags = createMediaFlafs(bp, limitMax);
+  const mediaFlags = createMediaFlags(bp, limitMax);
   return mediaFlags;
 };
 
